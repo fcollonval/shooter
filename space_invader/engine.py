@@ -28,14 +28,14 @@ from playership import PlayerShip
 
 
 class ActorsContainer(FloatLayout):
-    game_start_time = NumericProperty(0)
     player = ObjectProperty(None)
+
+    game_start_time = NumericProperty(0)
     pbullets = ListProperty()
     ebullets = ListProperty()
     enemies = ListProperty()
     debris = ListProperty()
     player_lives = NumericProperty(0)
-    player_dead = BooleanProperty(True)
     score = NumericProperty(0)
 
     options = DictProperty({"start_lives": 1})
@@ -44,12 +44,13 @@ class ActorsContainer(FloatLayout):
         if value == 0:
             if self.player is not None:
                 self.remove_widget(self.player)
-            self.player_dead = True
+            print(self.size)
+            info = Label(text="You died!", font_size=50, bold=True)
+            self.add_widget(info)
 
     def init_game(self):
         if self.player_lives == 0:
             self.player_lives = self.options["start_lives"]
-            self.player_dead = False
             self.score = 0
             self.game_start_time = time()
             self.clear_widgets()
@@ -109,10 +110,7 @@ class SpaceGame(Screen):
     def on_pre_leave(self, *args):
         self._update_event.cancel()
         self.menu.but_launch.text = "Survival Mode"
-        self.menu.lbl_footer.text = ""
-        if self.container.player_dead:
-            self.menu.lbl_footer.text = "You died !"
-        elif self.container.player_lives > 0:
+        if self.container.player_lives > 0:
             self.menu.but_launch.text = "Resume"
         super(SpaceGame, self).on_pre_leave(*args)
 
@@ -121,7 +119,7 @@ class ShooterGame(ScreenManager):
     start_lives = NumericProperty(1)
 
     def __init__(self, **kwargs):
-        kwargs['transition'] = FadeTransition()
+        kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
         self.game_start_time = time()
         self.bg_music = None  # SoundLoader.load('music.ogg')

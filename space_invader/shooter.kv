@@ -104,7 +104,6 @@
     AnchorLayout:
         anchor_y: "bottom"
         size_hint_y: None
-        # height: 20
 
         BoxLayout:
             orientation: "horizontal"
@@ -122,7 +121,6 @@
 
 <Menu>:
     name: "menu"
-    lbl_footer: lbl_footer
     but_launch: button1
     # but2: button2
     but3: button3
@@ -164,11 +162,3 @@
             top: root.top - 250
             text: "Quit"
             on_release: app.stop()
-
-        Label:
-            id: lbl_footer
-            font_size: 20
-            background_color: (1, 1, 1, 0)
-            center_x: root.width / 2
-            top: 1 + self.height
-            text: ""
