@@ -75,6 +75,8 @@
     id: main
     name: "main"
 
+    container: container
+
     canvas:
         Clear
         Color: 
@@ -84,20 +86,35 @@
             size: main.size
 
     AnchorLayout:
+        anchor_x: "right"
+        anchor_y: "top"
+        size_hint: None, None
+        size: main.size
+
+        Button:
+            size_hint: None, None
+            size: 50, 25
+            text: "Menu"
+            on_release: main.manager.current = "menu"
+
+    ActorsContainer:
+        id: container
+
+    AnchorLayout:
         anchor_y: "bottom"
         size_hint_y: None
-        height: 20
+        # height: 20
 
         BoxLayout:
             orientation: "horizontal"
             Label:
-                text: "Score: {}".format(str(main.score))
+                text: "Score: {}".format(str(container.score))
                 text_size: self.size
                 halign: "left"
                 padding: (5, 2)
 
             Label:
-                text: "Lives: {}".format(str(main.player_lives))
+                text: "Lives: {}".format(str(container.player_lives))
                 text_size: self.size
                 halign: "right"
                 padding: (10, 2)

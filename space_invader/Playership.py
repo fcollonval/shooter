@@ -95,11 +95,6 @@ class PlayerShip(Widget):
         if "spacebar" in self.keyboard_inputs:
             self.gun.shoot()
 
-        if "escape" in self.keyboard_inputs:
-            # self.parent.game_state = "pause"
-            # TODO
-            pass
-
         self.pos = Vector(*self.velocity) + self.pos
         if self.x < 0:
             self.x = 0

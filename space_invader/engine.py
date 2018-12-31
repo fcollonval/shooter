@@ -4,10 +4,17 @@ from time import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.properties import ListProperty, StringProperty, NumericProperty, \
-    BooleanProperty, ObjectProperty
+from kivy.properties import (
+    ListProperty,
+    StringProperty,
+    NumericProperty,
+    BooleanProperty,
+    ObjectProperty,
+    DictProperty,
+)
 
 from enemies import EnemyShip
 from playership import PlayerShip
@@ -20,7 +27,8 @@ from playership import PlayerShip
 #     OPTIONS = 3
 
 
-class SpaceGame(Screen):
+class ActorsContainer(FloatLayout):
+    game_start_time = NumericProperty(0)
     player = ObjectProperty(None)
     pbullets = ListProperty()
     ebullets = ListProperty()
@@ -30,29 +38,19 @@ class SpaceGame(Screen):
     player_dead = BooleanProperty(True)
     dead_time = NumericProperty(0)
     score = NumericProperty(0)
-    game_start_time = NumericProperty(0)
 
-    def __init__(self, **kwargs):
-        super(SpaceGame, self).__init__(**kwargs)
-        self._update_event = None
+    options = DictProperty({"start_lives": 1})
 
-    def on_pre_enter(self, *args):
+    def init_game(self):
         if self.player_lives == 0:
-            self.player_lives = self.manager.start_lives
+            self.player_lives = self.options["start_lives"]
             self.score = 0
             self.game_start_time = time()
-            self.clear_actors()
+            self.clear_widgets()
             self.player = PlayerShip(x=self.width / 2, y=30)
             self.add_widget(self.player)
-    
-        self._update_event = Clock.schedule_interval(self.game_update, 1.0 / 60.0)
-        super(SpaceGame, self).on_pre_enter(*args)
 
-    def on_pre_leave(self, *args):
-        self._update_event.cancel()
-        super(SpaceGame, self).on_pre_leave(*args)
-
-    def game_update(self, dt):
+    def update_game(self, dt):
         pbullets = []
         ebullets = []
 
@@ -83,10 +81,6 @@ class SpaceGame(Screen):
             if self.player_lives <= 0:
                 self.player_dead = False
                 self.clear_widgets()
-            # else:
-            #     self.player_dead = False
-            #     self.player = PlayerShip(x=self.width / 2, y=30)
-            #     self.add_widget(self.player)
 
         if len(self.enemies) < int((time() - self.game_start_time) / 10) + 1:
             enemy = EnemyShip(randint(0, self.width), self.height + 50, space_game=self)
@@ -95,11 +89,24 @@ class SpaceGame(Screen):
             self.enemies.append(enemy)
             self.add_widget(enemy)
 
-    def clear_actors(self):
-        # TODO
-        for child in self.enemies + self.pbullets + self.ebullets + [ self.player ]:
-            if child is not None:
-                self.remove_widget(child)
+
+class SpaceGame(Screen):
+    container = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(SpaceGame, self).__init__(**kwargs)
+        self._update_event = None
+
+    def on_pre_enter(self, *args):
+        self.container.init_game()
+        self._update_event = Clock.schedule_interval(
+            self.container.update_game, 1.0 / 60.0
+        )
+        super(SpaceGame, self).on_pre_enter(*args)
+
+    def on_pre_leave(self, *args):
+        self._update_event.cancel()
+        super(SpaceGame, self).on_pre_leave(*args)
 
 
 class ShooterGame(ScreenManager):
