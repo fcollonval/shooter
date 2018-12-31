@@ -21,9 +21,7 @@ from bullets import EnemyBullet, PlayerBullet
 
 class ShooterApp(App):
     def build(self):
-        game = ShooterGame(WIDTH, HEIGHT)
-        # Clock.schedule_interval(game.game_update, 1.0 / 60.0)
-        return game
+        return ShooterGame(width=WIDTH, height=HEIGHT)
 
 
 if __name__ == "__main__":

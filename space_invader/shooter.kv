@@ -1,17 +1,18 @@
 #:kivy 1.10.1
 
 <PlayerShip>:
-    # id: player_ship
+    size_hint: None, None
     size: 10, 20
     canvas:
         Clear
         Color: 
             rgb: (0, 1, 0)
         Rectangle:
-            pos:self.pos
-            size:self.size
+            pos: self.pos
+            size: self.size
 
 <EnemyShip>:
+    size_hint: None, None
     size: 40, 30
     canvas:
         Clear
@@ -22,6 +23,7 @@
             size:self.size
         
 <Debris>:
+    size_hint: None, None
     size: 10, 10
     canvas:
         Clear
@@ -33,6 +35,7 @@
 
 <PlayerBullet>:
     id: pbullet
+    size_hint: None, None
     size: 2, 15
     canvas.before:
         PushMatrix
@@ -52,6 +55,7 @@
 
 <EnemyBullet>:
     id: ebullet
+    size_hint: None, None
     size: 2, 8
     canvas:
         Clear
@@ -63,7 +67,9 @@
 
 <ShooterGame>:
     Menu:
+        size: root.size
     SpaceGame:
+        size: root.size
 
 <SpaceGame>:
     id: main

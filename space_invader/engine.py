@@ -41,8 +41,8 @@ class SpaceGame(Screen):
             self.player_lives = self.manager.start_lives
             self.score = 0
             self.game_start_time = time()
-            self.clear_widgets()
-            self.player = PlayerShip(self.width / 2, 30)
+            self.clear_actors()
+            self.player = PlayerShip(x=self.width / 2, y=30)
             self.add_widget(self.player)
     
         self._update_event = Clock.schedule_interval(self.game_update, 1.0 / 60.0)
@@ -83,10 +83,10 @@ class SpaceGame(Screen):
             if self.player_lives <= 0:
                 self.player_dead = False
                 self.clear_widgets()
-            else:
-                self.player_dead = False
-                self.player = PlayerShip(self.width / 2, 30)
-                self.add_widget(self.player)
+            # else:
+            #     self.player_dead = False
+            #     self.player = PlayerShip(x=self.width / 2, y=30)
+            #     self.add_widget(self.player)
 
         if len(self.enemies) < int((time() - self.game_start_time) / 10) + 1:
             enemy = EnemyShip(randint(0, self.width), self.height + 50, space_game=self)
@@ -95,14 +95,18 @@ class SpaceGame(Screen):
             self.enemies.append(enemy)
             self.add_widget(enemy)
 
+    def clear_actors(self):
+        # TODO
+        for child in self.enemies + self.pbullets + self.ebullets + [ self.player ]:
+            if child is not None:
+                self.remove_widget(child)
+
 
 class ShooterGame(ScreenManager):
     start_lives = NumericProperty(1)
 
-    def __init__(self, width, height, **kwargs):
+    def __init__(self, **kwargs):
         super(ShooterGame, self).__init__(**kwargs)
-        self.width = width
-        self.height = height
         self.game_start_time = time()
         self.bg_music = None  # SoundLoader.load('music.ogg')
         if self.bg_music:

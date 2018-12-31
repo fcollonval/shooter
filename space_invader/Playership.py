@@ -26,10 +26,8 @@ class PlayerShip(Widget):
     keyboard_inputs = []
     _keyboard = None
 
-    def __init__(self, x, y, **kwargs):
+    def __init__(self, **kwargs):
         super(PlayerShip, self).__init__(**kwargs)
-        self.x = x
-        self.y = y
         self.gun = RepeaterGun()
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
