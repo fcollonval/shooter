@@ -5,7 +5,7 @@ from kivy.uix.screenmanager import Screen
 
 
 class Menu(Screen):
-    but1 = ObjectProperty(None)
+    but_launch = ObjectProperty(None)
     # but2 = ObjectProperty(None)
     but3 = ObjectProperty(None)
 
@@ -26,7 +26,7 @@ class Menu(Screen):
     def update(self, dt):
         x, y = Window.mouse_pos
         buttons = [
-            self.but1,
+            self.but_launch,
             # self.but2,
             self.but3,
         ]

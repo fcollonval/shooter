@@ -19,24 +19,27 @@ class PlayerShip(Widget):
     bullet_strength = 70
     gun_level = 2
     vel = 4
-    velocity_x = NumericProperty(0)
-    velocity_y = NumericProperty(0)
-    velocity = ReferenceListProperty(velocity_x, velocity_y)
 
     keyboard_inputs = []
     _keyboard = None
 
     def __init__(self, **kwargs):
         super(PlayerShip, self).__init__(**kwargs)
+        if self._keyboard == None:
+            self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+            self._keyboard.bind(on_key_down=self._on_key_down)
+            self._keyboard.bind(on_key_up=self._on_key_up)
+
         self.gun = RepeaterGun()
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
 
     def _keyboard_closed(self):
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard.unbind(on_key_down=self._on_key_down)
+        self._keyboard.unbind(on_key_up=self._on_key_up)
         self._keyboard = None
 
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers, *args):
+    def _on_key_down(self, keyboard, keycode, text, modifiers, *args):
         commands = ["a", "s", "d", "w", "spacebar", "escape"]
         if keycode[1] in commands and keycode[1] not in self.keyboard_inputs:
             self.keyboard_inputs.append(keycode[1])
@@ -44,15 +47,15 @@ class PlayerShip(Widget):
             # the system.
         return True
 
-    def _on_keyboard_up(self, keyboard, keycode, *args):
+    def _on_key_up(self, keyboard, keycode, *args):
         commands = ["a", "s", "d", "w", "spacebar", "escape"]
         if keycode[1] in commands:
             try:
                 self.keyboard_inputs.remove(keycode[1])
             except:
                 pass
-                # Return True to accept the key. Otherwise, it will be used by
-                # the system.
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
         return True
 
     def spawn_debris(self, x, y):
@@ -65,44 +68,32 @@ class PlayerShip(Widget):
 
     def update(self):
         ret = True
-        if self._keyboard == None:
-            self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-            self._keyboard.bind(on_key_down=self._on_keyboard_down)
-            self._keyboard.bind(on_key_up=self._on_keyboard_up)
-
-        self.velocity_x = 0
-        self.velocity_y = 0
-        # print self.keyboard_inputs
 
         if self.health <= 0:
             if self.boom:
                 self.boom.play()
             self.spawn_debris(self.x, self.y)
             self.parent.player_lives -= 1
-            self.parent.player_dead = True
-            self.parent.dead_time = time()
-            self.parent.remove_widget(self)
 
+        velocity_x = 0
+        velocity_y = 0
         if "a" in self.keyboard_inputs:
-            self.velocity_x -= self.vel
+            velocity_x -= self.vel
         if "d" in self.keyboard_inputs:
-            self.velocity_x += self.vel
+            velocity_x += self.vel
         if "w" in self.keyboard_inputs:
-            self.velocity_y += self.vel
+            velocity_y += self.vel
         if "s" in self.keyboard_inputs:
-            self.velocity_y -= self.vel
+            velocity_y -= self.vel
 
         if "spacebar" in self.keyboard_inputs:
             self.gun.shoot()
 
-        self.pos = Vector(*self.velocity) + self.pos
-        if self.x < 0:
-            self.x = 0
-        if self.x > self.parent.width - self.width:
-            self.x = self.parent.width - self.width
-        if self.y < 0:
-            self.y = 0
-        if self.y > self.parent.height - self.height:
-            self.y = self.parent.height - self.height
+        value = Vector(velocity_x, velocity_y) + self.pos
+        self.pos = (
+            min(max(0, value[0]), self.parent.width - self.width),
+            min(max(0, value[1]), self.parent.height - self.height),
+        )
+
         return ret
 

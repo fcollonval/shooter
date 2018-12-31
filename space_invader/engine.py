@@ -6,7 +6,7 @@ from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
 from kivy.properties import (
     ListProperty,
     StringProperty,
@@ -36,14 +36,20 @@ class ActorsContainer(FloatLayout):
     debris = ListProperty()
     player_lives = NumericProperty(0)
     player_dead = BooleanProperty(True)
-    dead_time = NumericProperty(0)
     score = NumericProperty(0)
 
     options = DictProperty({"start_lives": 1})
 
+    def on_player_lives(self, instance, value):
+        if value == 0:
+            if self.player is not None:
+                self.remove_widget(self.player)
+            self.player_dead = True
+
     def init_game(self):
         if self.player_lives == 0:
             self.player_lives = self.options["start_lives"]
+            self.player_dead = False
             self.score = 0
             self.game_start_time = time()
             self.clear_widgets()
@@ -77,11 +83,6 @@ class ActorsContainer(FloatLayout):
         for enemy in self.enemies:
             enemy.check_collision(self.player)
 
-        if self.player_dead == True and time() > self.dead_time + 3:
-            if self.player_lives <= 0:
-                self.player_dead = False
-                self.clear_widgets()
-
         if len(self.enemies) < int((time() - self.game_start_time) / 10) + 1:
             enemy = EnemyShip(randint(0, self.width), self.height + 50, space_game=self)
             enemy.velocity_y = uniform(-2, -1)
@@ -92,6 +93,7 @@ class ActorsContainer(FloatLayout):
 
 class SpaceGame(Screen):
     container = ObjectProperty(None)
+    menu = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(SpaceGame, self).__init__(**kwargs)
@@ -106,6 +108,12 @@ class SpaceGame(Screen):
 
     def on_pre_leave(self, *args):
         self._update_event.cancel()
+        self.menu.but_launch.text = "Survival Mode"
+        self.menu.lbl_footer.text = ""
+        if self.container.player_dead:
+            self.menu.lbl_footer.text = "You died !"
+        elif self.container.player_lives > 0:
+            self.menu.but_launch.text = "Resume"
         super(SpaceGame, self).on_pre_leave(*args)
 
 
@@ -113,6 +121,7 @@ class ShooterGame(ScreenManager):
     start_lives = NumericProperty(1)
 
     def __init__(self, **kwargs):
+        kwargs['transition'] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
         self.game_start_time = time()
         self.bg_music = None  # SoundLoader.load('music.ogg')
