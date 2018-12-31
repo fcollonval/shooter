@@ -12,13 +12,17 @@ Config.set("kivy", "keyboard_mode", "system")
 from kivy.app import App
 from kivy.clock import Clock
 
-from engine import ShooterGame
+from engine import ShooterGame, SpaceGame
+from menu import Menu
+from playership import PlayerShip
+from enemies import Debris, EnemyShip
+from bullets import EnemyBullet, PlayerBullet
 
 
 class ShooterApp(App):
     def build(self):
         game = ShooterGame(WIDTH, HEIGHT)
-        Clock.schedule_interval(game.game_update, 1.0 / 60.0)
+        # Clock.schedule_interval(game.game_update, 1.0 / 60.0)
         return game
 
 

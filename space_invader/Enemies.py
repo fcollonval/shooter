@@ -2,7 +2,7 @@ from random import choice
 from time import time
 
 from kivy.core.audio import SoundLoader
-from kivy.properties import NumericProperty, ReferenceListProperty
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
@@ -11,6 +11,7 @@ from misc_objects import Debris
 
 
 class EnemyShip(Widget):
+    space_game = ObjectProperty(None)
     name = "enemy"
     min_y = NumericProperty(200)
     health = NumericProperty(100)
@@ -29,7 +30,7 @@ class EnemyShip(Widget):
 
     def spawn_debris(self, x, y):
         dirs = [-2, -1, 0, 1, 2]
-        for xx in range(10):
+        for _ in range(10):
             tmp_debris = Debris(x, y)
             tmp_debris.velocity_x = choice(dirs)
             tmp_debris.velocity_y = choice(dirs)
@@ -65,5 +66,6 @@ class EnemyShip(Widget):
                 self.boom.play()
             ret = False
         if ret == False:
+            self.space_game.enemies.remove(self)
             self.parent.remove_widget(self)
         return ret

@@ -1,198 +1,151 @@
-#:kivy 1.0.9
+#:kivy 1.10.1
 
 <PlayerShip>:
-	# id: player_ship
-	size: 10, 20
-	canvas:
-		Clear
-		Color: 
-			rgb: (0, 1, 0)
-		Rectangle:
-			pos:self.pos
-			size:self.size
+    # id: player_ship
+    size: 10, 20
+    canvas:
+        Clear
+        Color: 
+            rgb: (0, 1, 0)
+        Rectangle:
+            pos:self.pos
+            size:self.size
 
 <EnemyShip>:
-	size: 40, 30
-	canvas:
-		Clear
-		Color: 
-			rgb: (1, 0, 0)
-		Ellipse:
-			pos:self.pos
-			size:self.size
-		
+    size: 40, 30
+    canvas:
+        Clear
+        Color: 
+            rgb: (1, 0, 0)
+        Ellipse:
+            pos:self.pos
+            size:self.size
+        
 <Debris>:
-	size: 10, 10
-	canvas:
-		Clear
-		# Color: 
-		# 	rgb: (0.7, 0.7, 0)
-		Rectangle:
-			pos:self.pos
-			size:self.size
+    size: 10, 10
+    canvas:
+        Clear
+        # Color: 
+        #     rgb: (0.7, 0.7, 0)
+        Rectangle:
+            pos:self.pos
+            size:self.size
 
 <PlayerBullet>:
-	id: pbullet
-	size: 2, 15
-	canvas:
-		Clear
-		Color: 
-			rgb: (0, 1, 0)
-		Rectangle:
-			pos:self.pos
-			size:self.size
-	canvas.before:
-		PushMatrix
-		Rotate:
-			angle: root.angle
-			axis: 0, 0, 1
-			origin: root.center
-	canvas.after:
-		PopMatrix
+    id: pbullet
+    size: 2, 15
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.angle
+            axis: 0, 0, 1
+            origin: root.center
+    canvas:
+        Clear
+        Color: 
+            rgb: (0, 1, 0)
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    canvas.after:
+        PopMatrix
 
 <EnemyBullet>:
-	id: ebullet
-	size: 2, 8
-	canvas:
-		Clear
-		Color: 
-			rgb: (1, 0, 0)
-		Rectangle:
-			pos:self.pos
-			size:self.size
+    id: ebullet
+    size: 2, 8
+    canvas:
+        Clear
+        Color: 
+            rgb: (1, 0, 0)
+        Rectangle:
+            pos:self.pos
+            size:self.size
 
 <ShooterGame>:
-	canvas:
-		Clear
-		Color: 
-			rgb: (0, 0, 0)
-		Rectangle:
-			pos: self.pos
-			size: root.size
-	
-<StartMenu>:
-	but1: button1
-	but2: button2
-	but3: button3
+    Menu:
+    SpaceGame:
 
-	Button:
-		id: button1
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 50
-		text: "Survival Mode"
-		on_press: root.start_game()
+<SpaceGame>:
+    id: main
+    name: "main"
 
-	Button:
-		id: button2
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 150
-		text: "Options"
-		# on_press: root.do_action()
+    canvas:
+        Clear
+        Color: 
+            rgb: (0, 0, 0)
+        Rectangle:
+            pos: self.pos
+            size: main.size
 
-	Button:
-		id: button3
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 250
-		text: "Quit"
-		on_press: root.quit()
+    AnchorLayout:
+        anchor_y: "bottom"
+        size_hint_y: None
+        height: 20
 
-<PauseMenu>:
-	but1: button1
-	but2: button2
-	but3: button3
+        BoxLayout:
+            orientation: "horizontal"
+            Label:
+                text: "Score: {}".format(str(main.score))
+                text_size: self.size
+                halign: "left"
+                padding: (5, 2)
 
-	canvas:
-		Clear
-		Color: 
-			rgba: (1, 1, 1, 0.1)
-		Rectangle:
-			pos: self.pos
-			size: root.size
+            Label:
+                text: "Lives: {}".format(str(main.player_lives))
+                text_size: self.size
+                halign: "right"
+                padding: (10, 2)
 
-	Label:
-		id: label1
-		font_size: 20
-		background_color: (1, 1, 1, 0)
-		center_x: root.width / 2
-		top: 1 + self.height
-		text: "PAUSED"
+<Menu>:
+    id: menu
+    name: "menu"
+    lbl_footer: lbl_footer
+    but1: button1
+    # but2: button2
+    but3: button3
 
-	Button:
-		id: button1
-		font_size: 50
-		background_color: (1, 1, 1, 0)
-		center_x: root.width / 2
-		top: root.top - 50
-		text: "Resume"
-		on_press: root.resume_game()
+    canvas:
+        Clear
+        Color: 
+            rgba: (1, 1, 1, 0.1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
-	Button:
-		id: button2
-		font_size: 50
-		background_color: (1, 1, 1, 0)
-		center_x: root.width / 2
-		top: root.top - 150
-		text: "Options"
-		
-	Button:
-		id: button3
-		font_size: 50
-		background_color: (1, 1, 1, 0)
-		center_x: root.width / 2
-		top: root.top - 250
-		text: "Quit"
-		on_press: root.quit()
+    BoxLayout:
+        orientation: "vertical"
 
-<GameOver>:
-	but1: button1
-	but2: button2
-	but3: button3
+        Button:
+            id: button1
+            font_size: 50
+            background_color: (1, 1, 1, 0)
+            center_x: menu.width / 2
+            top: menu.top - 50
+            text: "Survival Mode"
+            on_release: menu.manager.current = "main"
 
-	canvas:
-		Clear
-		Color: 
-			rgba: (0, 0, 0, 1)
-		Rectangle:
-			pos: self.pos
-			size: root.size
+        # Button:
+        #     id: button2
+        #     font_size: 50
+        #     background_color: (1, 1, 1, 0)
+        #     center_x: menu.width / 2
+        #     top: menu.top - 150
+        #     text: "Options"
+        #     on_release: print("TODO no options")
+            
+        Button:
+            id: button3
+            font_size: 50
+            background_color: (1, 1, 1, 0)
+            center_x: menu.width / 2
+            top: menu.top - 250
+            text: "Quit"
+            on_release: app.stop()
 
-	Label:
-		id: label1
-		font_size: 20
-		background_color: (1, 1, 1, 0)
-		center_x: root.width / 2
-		top: 1 + self.height
-		text: "You died!"
-
-	Button:
-		id: button1
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 50
-		text: "Survival Mode"
-		on_press: root.start_game()
-
-	Button:
-		id: button2
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 150
-		text: "Options"
-		# on_press: root.do_action()
-
-	Button:
-		id: button3
-		font_size: 50
-		background_color: (0,0,0,1)
-		center_x: root.width / 2
-		top: root.top - 250
-		text: "Quit"
-		on_press: root.quit()
+        Label:
+            id: lbl_footer
+            font_size: 20
+            background_color: (1, 1, 1, 0)
+            center_x: menu.width / 2
+            top: 1 + self.height
+            text: ""
