@@ -6,7 +6,6 @@ from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProper
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
-from bullets import EnemyBullet
 from misc_objects import Debris
 
 
@@ -22,10 +21,8 @@ class EnemyShip(Widget):
 
     velocity = ReferenceListProperty(velocity_x, velocity_y)
 
-    def __init__(self, x, y, **kwargs):
+    def __init__(self, **kwargs):
         super(EnemyShip, self).__init__(**kwargs)
-        self.x = x
-        self.y = y
         self.boom = None  # SoundLoader.load('boom.ogg')
 
     def spawn_debris(self, x, y):
@@ -34,7 +31,7 @@ class EnemyShip(Widget):
             tmp_debris = Debris(x, y)
             tmp_debris.velocity_x = choice(dirs)
             tmp_debris.velocity_y = choice(dirs)
-            self.parent.add_widget(tmp_debris)
+            self.space_game.add_widget(tmp_debris)
 
     def check_collision(self, target):
         if target.collide_widget(self):
@@ -45,18 +42,15 @@ class EnemyShip(Widget):
         ret = True
         self.pos = Vector(*self.velocity) + self.pos
         if time() > self.gun_cooldown:
-            bullet = EnemyBullet()
-            bullet.x = self.x + self.width / 2
-            bullet.y = self.y
-            self.parent.add_widget(bullet)
+            self.space_game.add_enemy_bullet(x=self.x + self.width / 2, y=self.y)
             self.gun_cooldown = time() + self.gun_fire_interval
 
         if self.y < self.min_y and self.velocity_y < 0:
             self.velocity_y *= -1
         if (
-            self.y > self.parent.top + 100
+            self.y > self.space_game.top + 100
             or self.y < -100
-            or self.x > self.parent.width + 100
+            or self.x > self.space_game.width + 100
             or self.x < -100
         ):
             ret = False
@@ -66,6 +60,5 @@ class EnemyShip(Widget):
                 self.boom.play()
             ret = False
         if ret == False:
-            self.space_game.enemies.remove(self)
-            self.parent.remove_widget(self)
+            self.space_game.remove_enemy(self)
         return ret

@@ -3,7 +3,7 @@ from time import time
 
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
-from kivy.properties import NumericProperty, ReferenceListProperty
+from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
@@ -12,6 +12,7 @@ from misc_objects import Debris
 
 
 class PlayerShip(Widget):
+    space_game = ObjectProperty(None)
     name = "player"
     health = 100
     gun_cooldown = time()
@@ -30,7 +31,7 @@ class PlayerShip(Widget):
             self._keyboard.bind(on_key_down=self._on_key_down)
             self._keyboard.bind(on_key_up=self._on_key_up)
 
-        self.gun = RepeaterGun()
+        self.gun = RepeaterGun(space_game=self.space_game)
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
 
@@ -64,7 +65,7 @@ class PlayerShip(Widget):
             tmp_debris = Debris(x, y)
             tmp_debris.velocity_x = choice(dirs)
             tmp_debris.velocity_y = choice(dirs)
-            self.parent.add_widget(tmp_debris)
+            self.space_game.add_widget(tmp_debris)
 
     def update(self):
         ret = True
@@ -73,7 +74,7 @@ class PlayerShip(Widget):
             if self.boom:
                 self.boom.play()
             self.spawn_debris(self.x, self.y)
-            self.parent.player_lives -= 1
+            self.space_game.player_lives -= 1
 
         velocity_x = 0
         velocity_y = 0
@@ -91,8 +92,8 @@ class PlayerShip(Widget):
 
         value = Vector(velocity_x, velocity_y) + self.pos
         self.pos = (
-            min(max(0, value[0]), self.parent.width - self.width),
-            min(max(0, value[1]), self.parent.height - self.height),
+            min(max(0, value[0]), self.space_game.width - self.width),
+            min(max(0, value[1]), self.space_game.height - self.height),
         )
 
         return ret

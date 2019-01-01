@@ -18,6 +18,7 @@ from kivy.properties import (
 
 from enemies import EnemyShip
 from playership import PlayerShip
+from bullets import EnemyBullet, PlayerBullet
 
 
 # class GameState(IntEnum):
@@ -28,7 +29,7 @@ from playership import PlayerShip
 
 
 class ActorsContainer(FloatLayout):
-    player = ObjectProperty(None)
+    player = ObjectProperty(None, allownone=True)
 
     game_start_time = NumericProperty(0)
     pbullets = ListProperty()
@@ -40,56 +41,98 @@ class ActorsContainer(FloatLayout):
 
     options = DictProperty({"start_lives": 1})
 
+    def clear_widgets(self, children=None):
+        super(ActorsContainer, self).clear_widgets(children=children)
+        if children is None:
+            self.pbullets.clear()
+            self.ebullets.clear()
+            self.enemies.clear()
+        else:
+            for child in children:
+                if child in self.pbullets:
+                    self.pbullets.remove(child)
+
     def on_player_lives(self, instance, value):
         if value == 0:
-            if self.player is not None:
-                self.remove_widget(self.player)
-            print(self.size)
+            self.remove_player()
+
             info = Label(text="You died!", font_size=50, bold=True)
             self.add_widget(info)
 
     def init_game(self):
         if self.player_lives == 0:
+            self.game_start_time = time()
             self.player_lives = self.options["start_lives"]
             self.score = 0
             self.game_start_time = time()
             self.clear_widgets()
-            self.player = PlayerShip(x=self.width / 2, y=30)
-            self.add_widget(self.player)
+            self.add_player(x=self.width / 2, y=30)
 
     def update_game(self, dt):
-        pbullets = []
-        ebullets = []
-
+        # print(len(self.enemies), len(self.pbullets), len(self.ebullets))
         for child in self.children:
-            child_name = None
-            try:
-                child_name = child.name
-                if child.update():
-                    if child_name == "pbullet":
-                        pbullets.append(child)
-                    elif child_name == "ebullet":
-                        ebullets.append(child)
-            except:
-                pass
+            if hasattr(
+                child, "update"
+            ):  # TODO as actor inherit from the same class? better use Animation
+                child.update()
 
-        for bullet in pbullets:
+        for bullet in self.pbullets:
             for enemy in self.enemies:
                 if bullet.check_collision(enemy):
                     self.score += 10
 
-        for bullet in ebullets:
+        for bullet in self.ebullets:
             bullet.check_collision(self.player)
 
         for enemy in self.enemies:
             enemy.check_collision(self.player)
 
         if len(self.enemies) < int((time() - self.game_start_time) / 10) + 1:
-            enemy = EnemyShip(randint(0, self.width), self.height + 50, space_game=self)
-            enemy.velocity_y = uniform(-2, -1)
-            enemy.velocity_x = uniform(-2, 2)
-            self.enemies.append(enemy)
-            self.add_widget(enemy)
+            self.add_enemy(
+                x=randint(0, self.width),
+                y=self.height + 50,
+                velocity_y=uniform(-2, -1),
+                velocity_x=uniform(-2, 2),
+            )
+
+    def add_enemy(self, **kwargs):
+        kwargs["space_game"] = self
+        enemy = EnemyShip(**kwargs)
+        self.enemies.append(enemy)
+        self.add_widget(enemy)
+
+    def remove_enemy(self, enemy):
+        self.enemies.remove(enemy)
+        self.remove_widget(enemy)
+
+    def add_enemy_bullet(self, **kwargs):
+        kwargs["space_game"] = self
+        bullet = EnemyBullet(**kwargs)
+        self.ebullets.append(bullet)
+        self.add_widget(bullet)
+
+    def remove_enemy_bullet(self, bullet):
+        self.ebullets.remove(bullet)
+        self.remove_widget(bullet)
+
+    def add_player(self, **kwargs):
+        kwargs["space_game"] = self
+        self.player = PlayerShip(**kwargs)
+        self.add_widget(self.player)
+
+    def remove_player(self):
+        if self.player is not None:
+            self.remove_widget(self.player)
+
+    def add_player_bullet(self, **kwargs):
+        kwargs["space_game"] = self
+        bullet = PlayerBullet(**kwargs)
+        self.pbullets.append(bullet)
+        self.add_widget(bullet)
+
+    def remove_player_bullet(self, bullet):
+        self.pbullets.remove(bullet)
+        self.remove_widget(bullet)
 
 
 class SpaceGame(Screen):
@@ -121,7 +164,6 @@ class ShooterGame(ScreenManager):
     def __init__(self, **kwargs):
         kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
-        self.game_start_time = time()
         self.bg_music = None  # SoundLoader.load('music.ogg')
         if self.bg_music:
             self.bg_music.play()

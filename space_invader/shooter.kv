@@ -34,15 +34,15 @@
             size:self.size
 
 <PlayerBullet>:
-    id: pbullet
+    # id: pbullet
     size_hint: None, None
     size: 2, 15
-    canvas.before:
-        PushMatrix
-        Rotate:
-            angle: root.angle
-            axis: 0, 0, 1
-            origin: root.center
+    # canvas.before:
+    #     PushMatrix
+    #     Rotate:
+    #         angle: root.angle
+    #         axis: 0, 0, 1
+    #         origin: root.center
     canvas:
         Clear
         Color: 
@@ -50,11 +50,11 @@
         Rectangle:
             pos:self.pos
             size:self.size
-    canvas.after:
-        PopMatrix
+    # canvas.after:
+    #     PopMatrix
 
 <EnemyBullet>:
-    id: ebullet
+    # id: ebullet
     size_hint: None, None
     size: 2, 8
     canvas:
