@@ -1,60 +1,44 @@
-# from enum import IntEnum
 from random import randint, uniform
 from time import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
+from kivy.properties import (
+    BooleanProperty,
+    DictProperty,
+    ListProperty,
+    NumericProperty,
+    ObjectProperty,
+    StringProperty,
+)
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.uix.screenmanager import ScreenManager, Screen, FadeTransition
-from kivy.properties import (
-    ListProperty,
-    StringProperty,
-    NumericProperty,
-    BooleanProperty,
-    ObjectProperty,
-    DictProperty,
-)
+from kivy.uix.screenmanager import FadeTransition, Screen, ScreenManager
 
-from enemies import EnemyShip
+from enemies import EnemyHive
 from playership import PlayerShip
-from bullets import EnemyBullet, PlayerBullet
-
-
-# class GameState(IntEnum):
-#     START = 0
-#     PAUSE = 1
-#     PLAY = 2
-#     OPTIONS = 3
 
 
 class ActorsContainer(FloatLayout):
     player = ObjectProperty(None, allownone=True)
+    enemies = ObjectProperty(None)
 
     game_start_time = NumericProperty(0)
-    pbullets = ListProperty()
-    ebullets = ListProperty()
-    enemies = ListProperty()
     debris = ListProperty()
     player_lives = NumericProperty(0)
     score = NumericProperty(0)
 
     options = DictProperty({"start_lives": 1})
 
-    def clear_widgets(self, children=None):
-        super(ActorsContainer, self).clear_widgets(children=children)
-        if children is None:
-            self.pbullets.clear()
-            self.ebullets.clear()
-            self.enemies.clear()
-        else:
-            for child in children:
-                if child in self.pbullets:
-                    self.pbullets.remove(child)
+    def __init__(self, **kwargs):
+        super(ActorsContainer, self).__init__(**kwargs)
+        self.enemies = EnemyHive()
 
     def on_player_lives(self, instance, value):
         if value == 0:
-            self.remove_player()
+            # TODO should be moved in PlayerShip    
+            if self.player is not None:
+                self.remove_widget(self.player)
 
             info = Label(text="Game over!", font_size=50, bold=True)
             self.add_widget(info)
@@ -66,69 +50,37 @@ class ActorsContainer(FloatLayout):
             self.score = 0
             self.game_start_time = time()
             self.clear_widgets()
-            self.add_player(x=self.width / 2, y=30)
+            self.player = PlayerShip(space_game=self, x=self.width / 2, y=30)
+            self.add_widget(self.player)
 
     def update_game(self, dt):
-        # print(len(self.enemies), len(self.pbullets), len(self.ebullets))
         for child in self.children:
             if hasattr(
                 child, "update"
             ):  # TODO as actor inherit from the same class? better use Animation
                 child.update()
 
-        for bullet in self.pbullets:
-            for enemy in self.enemies:
-                if bullet.check_collision(enemy):
-                    self.score += 10
+        # for bullet in self.pbullets:
+        #     for enemy in self.enemies:
+        #         if bullet.check_collision(enemy):
+        #             self.score += 10
 
-        for bullet in self.ebullets:
-            bullet.check_collision(self.player)
+        # for bullet in self.ebullets:
+        #     bullet.check_collision(self.player)
 
-        for enemy in self.enemies:
-            enemy.check_collision(self.player)
+        # for enemy in self.enemies:
+        #     enemy.check_collision(self.player)
 
         if len(self.enemies) < int((time() - self.game_start_time) / 10) + 1:
-            self.add_enemy(
+            enemy = self.enemies.add_enemy(
+                space_game=self,
                 x=randint(0, self.width),
                 y=self.height + 50,
-                velocity_y=uniform(-2, -1),
-                velocity_x=uniform(-2, 2),
+                velocity_y=uniform(-2, -1) * 60,
+                velocity_x=uniform(-2, 2) * 60,
             )
-
-    def add_enemy(self, **kwargs):
-        kwargs["space_game"] = self
-        enemy = EnemyShip(**kwargs)
-        self.enemies.append(enemy)
-        self.add_widget(enemy)
-
-    def remove_enemy(self, enemy):
-        self.enemies.remove(enemy)
-        self.remove_widget(enemy)
-
-    def add_enemy_bullet(self, **kwargs):
-        bullet = EnemyBullet(self.player, **kwargs)
-        self.add_widget(bullet)
-        bullet.fire()
-
-    def remove_enemy_bullet(self, bullet):
-        self.remove_widget(bullet)
-
-    def add_player(self, **kwargs):
-        kwargs["space_game"] = self
-        self.player = PlayerShip(**kwargs)
-        self.add_widget(self.player)
-
-    def remove_player(self):
-        if self.player is not None:
-            self.remove_widget(self.player)
-
-    def add_player_bullet(self, **kwargs):
-        bullet = PlayerBullet(self.enemies, **kwargs)
-        self.add_widget(bullet)
-        bullet.fire()
-
-    def remove_player_bullet(self, bullet):
-        self.remove_widget(bullet)
+            self.add_widget(enemy)
+            enemy.move()
 
 
 class SpaceGame(Screen):

@@ -10,16 +10,10 @@ from kivy.vector import Vector
 
 from guns import RepeaterGun
 from misc_objects import Debris
+from spaceship import SpaceShip
 
 
-# class SpaceShip(Widget, ABC):
-
-#     @abstractmethod
-#     def collide_ammo(self, ammo):
-#         raise NotImplementedError()
-
-
-class PlayerShip(Widget):
+class PlayerShip(SpaceShip, Widget):
     space_game = ObjectProperty(None)
     name = "player"
     health = 100
@@ -74,6 +68,9 @@ class PlayerShip(Widget):
             tmp_debris.velocity_x = choice(dirs)
             tmp_debris.velocity_y = choice(dirs)
             self.space_game.add_widget(tmp_debris)
+
+    def collide_ammo(self, ammo):
+        pass
 
     def update(self):
         ret = True
