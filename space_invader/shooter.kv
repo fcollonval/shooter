@@ -33,37 +33,24 @@
             pos:self.pos
             size:self.size
 
-<PlayerBullet>:
-    # id: pbullet
-    size_hint: None, None
-    size: 2, 15
-    # canvas.before:
-    #     PushMatrix
-    #     Rotate:
-    #         angle: root.angle
-    #         axis: 0, 0, 1
-    #         origin: root.center
-    canvas:
-        Clear
-        Color: 
-            rgb: (0, 1, 0)
-        Rectangle:
-            pos:self.pos
-            size:self.size
-    # canvas.after:
-    #     PopMatrix
-
-<EnemyBullet>:
-    # id: ebullet
+<Bullet>:
     size_hint: None, None
     size: 2, 8
+
     canvas:
-        Clear
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<PlayerBullet>:
+    canvas.before:
+        Color: 
+            rgb: (0, 1, 0)
+
+<EnemyBullet>:
+    canvas.before:
         Color: 
             rgb: (1, 0, 0)
-        Rectangle:
-            pos:self.pos
-            size:self.size
 
 <ShooterGame>:
     Menu:
@@ -142,7 +129,7 @@
             background_color: (1, 1, 1, 0)
             center_x: root.width / 2
             top: root.top - 50
-            text: "Survival Mode"
+            text: "Play"
             on_release: root.manager.current = "main"
 
         # Button:

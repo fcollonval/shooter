@@ -56,7 +56,7 @@ class ActorsContainer(FloatLayout):
         if value == 0:
             self.remove_player()
 
-            info = Label(text="You died!", font_size=50, bold=True)
+            info = Label(text="Game over!", font_size=50, bold=True)
             self.add_widget(info)
 
     def init_game(self):
@@ -106,13 +106,11 @@ class ActorsContainer(FloatLayout):
         self.remove_widget(enemy)
 
     def add_enemy_bullet(self, **kwargs):
-        kwargs["space_game"] = self
-        bullet = EnemyBullet(**kwargs)
-        self.ebullets.append(bullet)
+        bullet = EnemyBullet(self.player, **kwargs)
         self.add_widget(bullet)
+        bullet.fire()
 
     def remove_enemy_bullet(self, bullet):
-        self.ebullets.remove(bullet)
         self.remove_widget(bullet)
 
     def add_player(self, **kwargs):
@@ -125,13 +123,11 @@ class ActorsContainer(FloatLayout):
             self.remove_widget(self.player)
 
     def add_player_bullet(self, **kwargs):
-        kwargs["space_game"] = self
-        bullet = PlayerBullet(**kwargs)
-        self.pbullets.append(bullet)
+        bullet = PlayerBullet(self.enemies, **kwargs)
         self.add_widget(bullet)
+        bullet.fire()
 
     def remove_player_bullet(self, bullet):
-        self.pbullets.remove(bullet)
         self.remove_widget(bullet)
 
 

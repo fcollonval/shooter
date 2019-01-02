@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from random import choice
 from time import time
 
@@ -9,6 +10,13 @@ from kivy.vector import Vector
 
 from guns import RepeaterGun
 from misc_objects import Debris
+
+
+# class SpaceShip(Widget, ABC):
+
+#     @abstractmethod
+#     def collide_ammo(self, ammo):
+#         raise NotImplementedError()
 
 
 class PlayerShip(Widget):

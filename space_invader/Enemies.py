@@ -42,7 +42,7 @@ class EnemyShip(Widget):
         ret = True
         self.pos = Vector(*self.velocity) + self.pos
         if time() > self.gun_cooldown:
-            self.space_game.add_enemy_bullet(x=self.x + self.width / 2, y=self.y)
+            self.space_game.add_enemy_bullet(x=self.x + self.width / 2, y=self.y, velocity_y=-240)
             self.gun_cooldown = time() + self.gun_fire_interval
 
         if self.y < self.min_y and self.velocity_y < 0:

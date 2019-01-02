@@ -28,9 +28,9 @@ class RepeaterGun(Widget):
 
         if self.parent.gun_level == 1:
             gun_fire_interval = 0.3
-            bullet_speed = 6
+            bullet_speed = 6 * 60
             bullet_damage = 100
-            bullet_angle = uniform(-0.3, 0.3)
+            bullet_angle = uniform(-0.3, 0.3) * 60
 
             if time() > self.gun_cooldown:
                 if self.laser:
@@ -47,9 +47,9 @@ class RepeaterGun(Widget):
 
         elif self.parent.gun_level == 2:
             gun_fire_interval = 0.15
-            bullet_speed = 7
+            bullet_speed = 7 * 60
             bullet_damage = 100
-            bullet_angle = uniform(-0.3, 0.3)
+            bullet_angle = uniform(-0.3, 0.3) * 60
             if time() > self.gun_cooldown:
                 if self.laser:
                     self.laser.play()
@@ -57,7 +57,7 @@ class RepeaterGun(Widget):
                     x=self.parent.center_x,
                     y=self.parent.top,
                     velocity_y=bullet_speed,
-                    velocity_x=bullet_angle,
+                    # velocity_x=bullet_angle,
                     health=bullet_damage,
                 )
                 self.gun_cooldown = time() + gun_fire_interval
@@ -80,9 +80,9 @@ class SpreadGun(Widget):
 
         if self.parent.gun_level == 1:
             gun_fire_interval = 0.4
-            bullet_speed = 6
+            bullet_speed = 360
             bullet_damage = 100
-            bullet_angle = -5
+            bullet_angle = -300
 
             if time() > self.gun_cooldown:
                 if self.laser:
@@ -110,9 +110,9 @@ class SpreadGun(Widget):
 
         elif self.parent.gun_level == 2:
             gun_fire_interval = 0.35
-            bullet_speed = 6
+            bullet_speed = 360
             bullet_damage = 100
-            bullet_angle = -7.5
+            bullet_angle = -7.5 * 60
 
             if time() > self.gun_cooldown:
                 if self.laser:
