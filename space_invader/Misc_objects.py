@@ -1,51 +1,35 @@
+from kivy.animation import Animation
+from kivy.properties import (
+    BoundedNumericProperty,
+    NumericProperty,
+)
+from kivy.uix.floatlayout import FloatLayout
 
-from random import random
-
-from kivy.graphics import Color, Rectangle
-from kivy.properties import NumericProperty, ReferenceListProperty
-from kivy.uix.widget import Widget
-from kivy.vector import Vector
+from spaceship import FPS
 
 
-class Debris(Widget):
-    name = "debris"
-    color1 = 1.0
-    color2 = 0.5
-    health = 10
-    size1 = 10
-    health = NumericProperty(10)
+class Debris(FloatLayout):
     velocity_x = NumericProperty(0)
     velocity_y = NumericProperty(0)
-    velocity = ReferenceListProperty(velocity_x, velocity_y)
+    red = BoundedNumericProperty(1.0, min=0.0, max=1.0)
+    green = BoundedNumericProperty(0.5, min=0.0, max=1.0)
 
-    def __init__(self, x, y, **kwargs):
+    DURATION = 25.
+
+    def __init__(self, **kwargs):
         super(Debris, self).__init__(**kwargs)
-        self.size_decrease = random()
-        self.x = x
-        self.y = y
-
-    def update(self):
-        ret = True
-        self.canvas.clear()
-        self.canvas.add(Color(self.color1, self.color2, 0))
-        self.canvas.add(
-            Rectangle(pos=self.pos, size=(int(self.size1), int(self.size1)))
+        a = Animation(
+            center_x=self.center_x + self.DURATION * FPS * self.velocity_x,
+            center_y=self.center_y + self.DURATION * FPS * self.velocity_y,
+            height=7.5,
+            red=0.5 * self.red,
+            green=0.0,
+            d=self.DURATION * FPS,
+            s=FPS,
         )
-        self.color1 -= 0.02
-        self.color2 -= 0.02
-        self.size1 -= self.size_decrease * 0.1
-        self.pos = Vector(*self.velocity) + self.pos
-        if self.color2 <= 0:
-            ret = False
-        if (
-            self.y > self.parent.top + 100
-            or self.y < -100
-            or self.x > self.parent.width + 100
-            or self.x < -100
-        ):
-            ret = False
-        elif self.health <= 0:
-            ret = False
-        if ret == False:
+        a.bind(on_complete=self.on_stop)
+        a.start(self)
+
+    def on_stop(self, animation, widget):
+        if self.parent is not None:
             self.parent.remove_widget(self)
-        return ret

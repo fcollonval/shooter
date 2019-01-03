@@ -9,6 +9,7 @@ from kivy.properties import (
 )
 from kivy.uix.widget import Widget
 
+FPS = 1./60.
 EPS = 1e-8  # Avoid dividing by zero
 MARGIN = 100  # Number of pixels outside the screen for element displacement
 
@@ -27,7 +28,7 @@ class Actor(Widget):
         # Cannot be done in __init__ as the parent needs to be set
         # to start the animation (screen size needed)
         if self.parent is None:
-            raise RuntimeError("Bullet needs a parent to be fired")
+            raise RuntimeError("{} needs a parent to be animated.".format(type(self).__qualname__))
         vx = self.velocity_x + EPS
         vy = self.velocity_y + EPS
         width, height = self.parent.size
@@ -60,7 +61,7 @@ class Actor(Widget):
             props["center_y"] = new_y
             props["duration"] = d_y
 
-        self.animation = Animation(**props)
+        self.animation = Animation(**props, step=FPS)
         if self.animation is not None:
             self.animation.bind(on_start=self.on_start)
             self.animation.bind(on_progress=self.on_progress)
@@ -79,20 +80,24 @@ class Actor(Widget):
             self.parent.remove_widget(self)
 
 
-class SpaceShip(Actor):
+class SpaceShip(Widget):
     space_game = ObjectProperty(None)
 
     alive = BooleanProperty(True)
 
-    gun_cooldown_time = 0.1
-    gun_fire_interval = 2.4
+    gun_cooldown_time = NumericProperty(0.1)
+    gun_fire_interval = NumericProperty(2.4)
+
+    def __init__(self, space_game):
+        self.space_game = space_game
 
     def collide_ammo(self, ammo):
         raise NotImplementedError()
 
 
 class SpaceShipHive(SpaceShip):
-    def __init__(self):
+    def __init__(self, space_game):
+        super(SpaceShipHive, self).__init__(space_game)
         self.hive = list()  # List[SpaceShip]
 
     def __len__(self):

@@ -4,7 +4,6 @@
     size_hint: None, None
     size: 10, 20
     canvas:
-        Clear
         Color: 
             rgb: (0, 1, 0)
         Rectangle:
@@ -15,7 +14,6 @@
     size_hint: None, None
     size: 40, 30
     canvas:
-        Clear
         Color: 
             rgb: (1, 0, 0)
         Ellipse:
@@ -24,14 +22,15 @@
         
 <Debris>:
     size_hint: None, None
-    size: 10, 10
+    height: 10
+    width: self.height
+
     canvas:
-        Clear
-        # Color: 
-        #     rgb: (0.7, 0.7, 0)
+        Color:
+            rgb: (self.red, self.green, 0.)
         Rectangle:
-            pos:self.pos
-            size:self.size
+            pos: self.pos
+            size: self.size
 
 <Bullet>:
     size_hint: None, None
@@ -66,12 +65,14 @@
     container: container
 
     canvas:
-        Clear
         Color: 
             rgb: (0, 0, 0)
         Rectangle:
             pos: self.pos
             size: root.size
+
+    ActorsContainer:
+        id: container
 
     AnchorLayout:
         anchor_x: "right"
@@ -85,9 +86,6 @@
             text: "Menu"
             on_release: root.manager.current = "menu"
 
-    ActorsContainer:
-        id: container
-
     AnchorLayout:
         anchor_y: "bottom"
         size_hint_y: None
@@ -95,13 +93,13 @@
         BoxLayout:
             orientation: "horizontal"
             Label:
-                text: "Score: {}".format(str(container.score))
+                text: "Score: {}".format(str(container.player.score))
                 text_size: self.size
                 halign: "left"
                 padding: (5, 2)
 
             Label:
-                text: "Lives: {}".format(str(container.player_lives))
+                text: "Lives: {}".format(str(container.player.lives))
                 text_size: self.size
                 halign: "right"
                 padding: (10, 2)
@@ -113,7 +111,6 @@
     but3: button3
 
     canvas:
-        Clear
         Color: 
             rgba: (1, 1, 1, 0.1)
         Rectangle:
