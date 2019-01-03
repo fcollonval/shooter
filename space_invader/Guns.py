@@ -44,7 +44,7 @@ class RepeaterGun(Widget):
                 self.space_game.add_widget(bullet)
                 bullet.fire()
                 self.gun_cooldown = time() + gun_fire_interval
-                self.parent.parent.score -= 1
+                self.parent.score -= 1
 
         elif self.parent.gun_level == 2:
             gun_fire_interval = 0.15
@@ -63,7 +63,7 @@ class RepeaterGun(Widget):
                 self.space_game.add_widget(bullet)
                 bullet.fire()
                 self.gun_cooldown = time() + gun_fire_interval
-                self.parent.parent.score -= 1
+                self.parent.score -= 1
 
         return ret
 

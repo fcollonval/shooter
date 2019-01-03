@@ -1,4 +1,3 @@
-import math 
 from kivy.properties import BooleanProperty
 
 from spaceship import Actor
@@ -23,21 +22,11 @@ class Bullet(Actor):
         pass
 
     def on_progress(self, animation, widget, progression):
-        # TODO
-        # if self.target.collide_ammo(self):
-        #     self.animation.stop(self)
-        pass
+        if self._target.collide_ammo(self):
+            self.animation.stop(self)
 
     def on_stop(self, animation, widget):
         super(Bullet, self).on_stop(animation, widget)
-
-    # def check_collision(self, target):
-    #     ret = False
-    #     if target.collide_point(self.center_x, self.center_y):
-    #         target.health -= self.health
-    #         self.health = 0
-    #         ret = True
-    #     return ret
 
 
 class PlayerBullet(Bullet):

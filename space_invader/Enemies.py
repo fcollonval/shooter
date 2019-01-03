@@ -1,17 +1,19 @@
 import math
-from random import choice, random
+from random import choice, randint, random, uniform
+from time import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 
-from spaceship import Actor, SpaceShip, SpaceShipHive
 from bullets import EnemyBullet
 from misc_objects import Debris
+from spaceship import Actor, SpaceShip, SpaceShipHive
 
 
-class EnemyShip(SpaceShip):
-    def __init__(self, **kwargs):
-        super(EnemyShip, self).__init__(**kwargs)
+class EnemyShip(SpaceShip, Actor):
+    def __init__(self, space_game, **kwargs):
+        SpaceShip.__init__(self, space_game)
+        Actor.__init__(self, **kwargs)
         self.min_y = 200
         self.boom = None  # SoundLoader.load('boom.ogg')
 
@@ -25,7 +27,10 @@ class EnemyShip(SpaceShip):
         if self.center_y == self.min_y:
             self.animation.cancel_all(self)
             self.velocity_y *= -1.0
-            super(EnemyShip, self).move()
+            if self.parent is None:
+                self.alive = False
+            else:
+                super(EnemyShip, self).move()
         else:
             self.alive = False
             self.animation.cancel_all(self)
@@ -52,24 +57,44 @@ class EnemyShip(SpaceShip):
 
             dirs = [-2, -1, 0, 1, 2]
             for _ in range(10):
-                tmp_debris = Debris(x, y)
-                tmp_debris.velocity_x = choice(dirs)
-                tmp_debris.velocity_y = choice(dirs)
+                tmp_debris = Debris(
+                    x=x,
+                    y=y,
+                    velocity_x=choice(dirs) * 60.0,
+                    velocity_y=choice(dirs) * 60.0,
+                )
                 self.parent.add_widget(tmp_debris)
 
             self.parent.remove_widget(self)
 
     def collide_ammo(self, ammo):
-        pass
-
-    # def check_collision(self, target):
-    #     if target.collide_widget(self):
-    #         target.health -= self.health
-    #         self.health = 0
+        if self.collide_widget(ammo) and self.alive:
+            self.space_game.player.score += 10
+            self.alive = False
+            return True
+        return False
 
 
 class EnemyHive(SpaceShipHive):
-    def add_enemy(self, **kwargs):
-        enemy = EnemyShip(**kwargs)
-        self.hive.append(enemy)
-        return enemy
+    def __init__(self, space_game):
+        super(EnemyHive, self).__init__(space_game)
+        self.start_time = time()
+        Clock.schedule_once(lambda dt: self.add_enemy(dt), random())
+
+    def add_enemy(self, dt):
+        if self.space_game.player.alive:
+            enemy = EnemyShip(
+                self.space_game,
+                x=randint(0, self.space_game.width),
+                y=self.space_game.height + 50,
+                velocity_y=uniform(-2, -1) * 60,
+                velocity_x=uniform(-2, 2) * 60,
+            )
+            self.space_game.add_widget(enemy)
+            enemy.move()
+            self.hive.append(enemy)
+        Clock.schedule_once(
+            # TODO decrease time interval between two calls
+            self.add_enemy,
+            random(),
+        )

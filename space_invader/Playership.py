@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
 from random import choice
 from time import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
+from kivy.properties import NumericProperty
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.vector import Vector
 
 from guns import RepeaterGun
@@ -14,8 +14,10 @@ from misc_objects import Debris
 from spaceship import SpaceShip
 
 
-class PlayerShip(SpaceShip):
-    health = 100
+class PlayerShip(SpaceShip, Widget):
+    lives = NumericProperty(0)
+    score = NumericProperty(0)
+
     gun_cooldown = time()
     bullet_strength = 70
     gun_level = 2
@@ -24,8 +26,10 @@ class PlayerShip(SpaceShip):
     keyboard_inputs = []
     _keyboard = None
 
-    def __init__(self, **kwargs):
-        super(PlayerShip, self).__init__(**kwargs)
+    def __init__(self, space_game, **kwargs):
+        SpaceShip.__init__(self, space_game)
+        Widget.__init__(self, **kwargs)
+        self.score = 0
         self.gun_fire_interval = 0.1
         if self._keyboard == None:
             self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -36,9 +40,7 @@ class PlayerShip(SpaceShip):
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
 
-        self._update_event = Clock.schedule_interval(
-            self.update, 1.0 / 60.0
-        )
+        self._update_event = Clock.schedule_interval(self.update, 1.0 / 60.0)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_key_down)
@@ -64,32 +66,39 @@ class PlayerShip(SpaceShip):
         # the system.
         return True
 
-    def move(self):
-        # Deactivate automatic motion
-        pass
+    def on_lives(self, instance, value):
+        self.alive = self.lives != 0
 
-    def spawn_debris(self, x, y):
-        dirs = [-2, -1, 0, 1, 2]
-        for _ in range(15):
-            tmp_debris = Debris(x, y)
-            tmp_debris.velocity_x = choice(dirs)
-            tmp_debris.velocity_y = choice(dirs)
-            self.space_game.add_widget(tmp_debris)
+    def on_alive(self, instance, value):
+        if not self.alive and self.parent is not None:
+            if self.boom:
+                self.boom.play()
+            x, y = (self.center_x, self.center_y)
+
+            dirs = [-2, -1, 0, 1, 2]
+            for _ in range(15):
+                tmp_debris = Debris(
+                    center_x=x,
+                    center_y=y,
+                    velocity_x=choice(dirs) * 60.0,
+                    velocity_y=choice(dirs) * 60.0,
+                )
+                self.parent.add_widget(tmp_debris)
+
+            self.parent.remove_widget(self)
+
+            info = Label(text="Game over!", font_size=50, bold=True)
+            self.add_widget(info)
 
     def collide_ammo(self, ammo):
-        pass
+        if self.collide_widget(ammo) and self.alive:
+            self.lives -= 1
+            return True
+        return False
 
     def update(self, dt):
         if self.parent is None:
-            self._update_event.cancel()
-
-        ret = True
-
-        if self.health <= 0:
-            if self.boom:
-                self.boom.play()
-            self.spawn_debris(self.x, self.y)
-            self.space_game.player_lives -= 1
+            return
 
         velocity_x = 0
         velocity_y = 0
@@ -110,6 +119,3 @@ class PlayerShip(SpaceShip):
             min(max(0, value[0]), self.space_game.width - self.width),
             min(max(0, value[1]), self.space_game.height - self.height),
         )
-
-        return ret
-
