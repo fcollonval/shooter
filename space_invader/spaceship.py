@@ -47,10 +47,6 @@ class Actor(Widget):
                 math.copysign(height + MARGIN, self.velocity_y),
                 math.copysign(self.min_y, - self.velocity_y),
             )
-
-        # if type(self).__qualname__ == "EnemyShip":
-        #     print("x ", new_x, d_x, self.velocity)
-        #     print("y ", new_y, d_y, self.velocity)
         
         props = {}
         if d_x < d_y:
@@ -71,19 +67,19 @@ class Actor(Widget):
             self.animation.bind(on_complete=self.on_stop)
             self.animation.start(self)
 
-    def on_start(self, instance, value):
+    def on_start(self, animation, widget):
         pass
 
-    def on_progress(self, instance, value, progression):
+    def on_progress(self, animation, widget, progression):
         pass
 
-    def on_stop(self, instance, value):
+    def on_stop(self, animation, widget):
         self.animation.cancel_all(self)
         if self.parent is not None:
             self.parent.remove_widget(self)
 
 
-class SpaceShip:
+class SpaceShip(Actor):
     space_game = ObjectProperty(None)
 
     alive = BooleanProperty(True)

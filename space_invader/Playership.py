@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from random import choice
 from time import time
 
+from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
@@ -13,12 +14,9 @@ from misc_objects import Debris
 from spaceship import SpaceShip
 
 
-class PlayerShip(SpaceShip, Widget):
-    space_game = ObjectProperty(None)
-    name = "player"
+class PlayerShip(SpaceShip):
     health = 100
     gun_cooldown = time()
-    gun_fire_interval = 0.1
     bullet_strength = 70
     gun_level = 2
     vel = 4
@@ -28,6 +26,7 @@ class PlayerShip(SpaceShip, Widget):
 
     def __init__(self, **kwargs):
         super(PlayerShip, self).__init__(**kwargs)
+        self.gun_fire_interval = 0.1
         if self._keyboard == None:
             self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
             self._keyboard.bind(on_key_down=self._on_key_down)
@@ -36,6 +35,10 @@ class PlayerShip(SpaceShip, Widget):
         self.gun = RepeaterGun(space_game=self.space_game)
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
+
+        self._update_event = Clock.schedule_interval(
+            self.update, 1.0 / 60.0
+        )
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_key_down)
@@ -61,6 +64,10 @@ class PlayerShip(SpaceShip, Widget):
         # the system.
         return True
 
+    def move(self):
+        # Deactivate automatic motion
+        pass
+
     def spawn_debris(self, x, y):
         dirs = [-2, -1, 0, 1, 2]
         for _ in range(15):
@@ -72,7 +79,10 @@ class PlayerShip(SpaceShip, Widget):
     def collide_ammo(self, ammo):
         pass
 
-    def update(self):
+    def update(self, dt):
+        if self.parent is None:
+            self._update_event.cancel()
+
         ret = True
 
         if self.health <= 0:

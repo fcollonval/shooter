@@ -18,18 +18,18 @@ class Bullet(Actor):
     def fire(self):
         self.move()
 
-    def on_start(self, instance, value):
+    def on_start(self, animation, widget):
         # TODO add here animation of fire
         pass
 
-    def on_progress(self, instance, value, progression):
+    def on_progress(self, animation, widget, progression):
         # TODO
         # if self.target.collide_ammo(self):
         #     self.animation.stop(self)
         pass
 
-    def on_stop(self, instance, value):
-        self.parent.remove_widget(self)
+    def on_stop(self, animation, widget):
+        super(Bullet, self).on_stop(animation, widget)
 
     # def check_collision(self, target):
     #     ret = False

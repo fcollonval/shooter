@@ -54,11 +54,11 @@ class ActorsContainer(FloatLayout):
             self.add_widget(self.player)
 
     def update_game(self, dt):
-        for child in self.children:
-            if hasattr(
-                child, "update"
-            ):  # TODO as actor inherit from the same class? better use Animation
-                child.update()
+        # for child in self.children:
+        #     if hasattr(
+        #         child, "update"
+        #     ):  # TODO as actor inherit from the same class? better use Animation
+        #         child.update()
 
         # for bullet in self.pbullets:
         #     for enemy in self.enemies:

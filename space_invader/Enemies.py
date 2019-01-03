@@ -1,25 +1,17 @@
 import math
 from random import choice, random
-from time import time
 
-from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from kivy.properties import NumericProperty, ReferenceListProperty, ObjectProperty
-from kivy.uix.widget import Widget
-from kivy.vector import Vector
 
 from spaceship import Actor, SpaceShip, SpaceShipHive
 from bullets import EnemyBullet
 from misc_objects import Debris
 
 
-class EnemyShip(SpaceShip, Actor):
-
+class EnemyShip(SpaceShip):
     def __init__(self, **kwargs):
-        Actor.__init__(self, **kwargs)
-        SpaceShip.__init__(self)
-        
+        super(EnemyShip, self).__init__(**kwargs)
         self.min_y = 200
         self.boom = None  # SoundLoader.load('boom.ogg')
 
@@ -29,7 +21,7 @@ class EnemyShip(SpaceShip, Actor):
             self.shot, self.gun_cooldown_time + self.gun_fire_interval * random()
         )
 
-    def on_stop(self, instance, value):
+    def on_stop(self, animation, widget):
         if self.center_y == self.min_y:
             self.animation.cancel_all(self)
             self.velocity_y *= -1.0
@@ -64,7 +56,7 @@ class EnemyShip(SpaceShip, Actor):
                 tmp_debris.velocity_x = choice(dirs)
                 tmp_debris.velocity_y = choice(dirs)
                 self.parent.add_widget(tmp_debris)
-            
+
             self.parent.remove_widget(self)
 
     def collide_ammo(self, ammo):
