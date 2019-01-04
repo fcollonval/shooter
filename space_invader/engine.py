@@ -27,6 +27,7 @@ class ActorsContainer(FloatLayout):
             self.player.x = self.width / 2
             self.player.y = 30
             self.player.lives = self.options["start_lives"]
+            self.player.score = 0
             self.add_widget(self.player)
             # Reset the hive
             self.enemies.clear()
