@@ -73,22 +73,27 @@ class PlayerShip(SpaceShip, Widget):
         if not self.alive and self.parent is not None:
             if self.boom:
                 self.boom.play()
-            x, y = (self.center_x, self.center_y)
+            x, y = (self.x, self.y)
 
             dirs = [-2, -1, 0, 1, 2]
             for _ in range(15):
                 tmp_debris = Debris(
-                    center_x=x,
-                    center_y=y,
+                    x=x,
+                    y=y,
                     velocity_x=choice(dirs) * 60.0,
                     velocity_y=choice(dirs) * 60.0,
                 )
                 self.parent.add_widget(tmp_debris)
 
+            info = Label(
+                text="Game over!",
+                font_size=50,
+                bold=True,
+                # center_x=self.parent.center_x,
+                # center_y=self.parent.center_y,
+            )
+            self.parent.add_widget(info)
             self.parent.remove_widget(self)
-
-            info = Label(text="Game over!", font_size=50, bold=True)
-            self.add_widget(info)
 
     def collide_ammo(self, ammo):
         if self.collide_widget(ammo) and self.alive:
