@@ -104,9 +104,10 @@ class SpaceShipHive(SpaceShip):
         return len(self.hive)
 
     def collide_ammo(self, ammo):
-        for ship in self.hive:
+        for i, ship in enumerate(self.hive):
             impact = ship.collide_ammo(ammo)
             if impact:
+                self.hive.pop(i)
                 return True
         return False
 
