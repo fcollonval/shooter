@@ -1,3 +1,5 @@
+from time import time
+
 from kivy.core.audio import SoundLoader
 from kivy.properties import DictProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
@@ -15,10 +17,10 @@ class ActorsContainer(FloatLayout):
 
     def __init__(self, **kwargs):
         super(ActorsContainer, self).__init__(**kwargs)
-        self.enemies = EnemyHive(self)
         self.player = PlayerShip(self)
+        self.enemies = EnemyHive(self)
 
-    def init_game(self):
+    def init_game(self, pause_time):
         if self.player.lives == 0:
             self.clear_widgets()
             # Reset the player
@@ -26,6 +28,12 @@ class ActorsContainer(FloatLayout):
             self.player.y = 30
             self.player.lives = self.options["start_lives"]
             self.add_widget(self.player)
+            # Reset the hive
+            self.enemies.clear()
+            self.enemies.start_time = time()
+            self.enemies.add_enemy()  # This call initiate a first enemy to start the hive growth
+        else:
+            self.enemies.start_time += pause_time
 
 
 class SpaceGame(Screen):
@@ -34,12 +42,14 @@ class SpaceGame(Screen):
 
     def __init__(self, **kwargs):
         super(SpaceGame, self).__init__(**kwargs)
+        self.leave_time = time()
 
     def on_pre_enter(self, *args):
-        self.container.init_game()
+        self.container.init_game(time() - self.leave_time)
         super(SpaceGame, self).on_pre_enter(*args)
 
     def on_pre_leave(self, *args):
+        self.leave_time = time()
         self.menu.but_launch.text = "Play"
         if self.container.player.lives > 0:
             self.menu.but_launch.text = "Resume"
