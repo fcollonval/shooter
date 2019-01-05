@@ -11,12 +11,16 @@ Config.set("kivy", "keyboard_mode", "system")
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.lang import Builder
 
 from engine import ShooterGame, SpaceGame
 from menu import Menu
 from playership import PlayerShip
 from enemies import Debris, EnemyShip
 from bullets import EnemyBullet, PlayerBullet
+
+
+Builder.load_file('style.kv')
 
 
 class ShooterApp(App):
