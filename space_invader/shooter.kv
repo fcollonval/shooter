@@ -65,47 +65,50 @@
     name: "main"
 
     container: container
+    background: background
 
-    canvas:
-        # Color: 
-        #     rgb: (0, 0, 0)
-        Rectangle:
-            pos: self.pos
-            size: root.size
-            source: "atlas://img/space_invader/darkPurple"
+    FloatLayout:
+        Background:
+            id: background
 
-    ActorsContainer:
-        id: container
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    texture: self.tx_space
 
-    AnchorLayout:
-        anchor_x: "right"
-        anchor_y: "top"
-        size_hint: None, None
-        size: root.size
+        ActorsContainer:
+            id: container
 
-        Button:
+        AnchorLayout:
+            anchor_x: "right"
+            anchor_y: "top"
             size_hint: None, None
-            size: 50, 25
-            text: "Menu"
-            on_release: root.manager.current = "menu"
+            size: root.size
 
-    AnchorLayout:
-        anchor_y: "bottom"
-        size_hint_y: None
+            Button:
+                size_hint: None, None
+                size: 50, 25
+                text: "Menu"
+                on_release: root.manager.current = "menu"
 
-        BoxLayout:
-            orientation: "horizontal"
-            Label:
-                text: "Score: {}".format(str(container.player.score))
-                text_size: self.size
-                halign: "left"
-                padding: (5, 2)
+        AnchorLayout:
+            anchor_y: "bottom"
+            size_hint_y: None
 
-            Label:
-                text: "Lives: {}".format(str(container.player.lives))
-                text_size: self.size
-                halign: "right"
-                padding: (10, 2)
+            BoxLayout:
+                orientation: "horizontal"
+                Label:
+                    text: "Score: {}".format(str(container.player.score))
+                    text_size: self.size
+                    halign: "left"
+                    padding: (5, 2)
+
+                Label:
+                    text: "Lives: {}".format(str(container.player.lives))
+                    text_size: self.size
+                    halign: "right"
+                    padding: (10, 2)
 
 <Menu>:
     name: "menu"

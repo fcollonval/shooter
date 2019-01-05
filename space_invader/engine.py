@@ -1,14 +1,18 @@
 from time import time
 
 from kivy.graphics import Color, Rectangle
+from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.core.image import Image as CoreImage
-from kivy.properties import DictProperty, ObjectProperty
+from kivy.properties import DictProperty, ObjectProperty, ListProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import FadeTransition, Screen, ScreenManager
+from kivy.uix.widget import Widget
 
 from enemies import EnemyHive
 from playership import PlayerShip
+
+from spaceship import FPS
 
 
 class ActorsContainer(FloatLayout):
@@ -26,11 +30,8 @@ class ActorsContainer(FloatLayout):
         if self.player.lives == 0:
             self.clear_widgets()
             # Reset the player
-            self.player.x = self.width / 2
-            self.player.y = 30
-            self.player.lives = self.options["start_lives"]
-            self.player.score = 0
             self.add_widget(self.player)
+            self.player.reset(self.options["start_lives"])
             # Reset the hive
             self.enemies.clear()
             self.enemies.start_time = time()
@@ -39,36 +40,55 @@ class ActorsContainer(FloatLayout):
             self.enemies.start_time += pause_time
 
 
+class Background(Widget):
+    tx_space = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(Background, self).__init__(**kwargs)
+        t = CoreImage("img/blue.png").texture
+        t.wrap = "repeat"
+        self.tx_space = t
+
+    def on_size(self, instance, value):
+        # Duplicate the background texture to fill the widget size
+        self.tx_space.uvsize = (
+            value[0] / self.tx_space.width,
+            value[1] / self.tx_space.height,
+        )
+        self.property("tx_space").dispatch(self)  # Force update
+
+    def update(self, dt):
+        # Change the origin of the texture to emulate motion
+        t = self.tx_space
+        t.uvpos = (t.uvpos[0], (t.uvpos[1] + 0.2 * dt) % self.height)
+        self.property("tx_space").dispatch(self)  # Force update
+
+
 class SpaceGame(Screen):
+    background = ObjectProperty(None)
     container = ObjectProperty(None)
     menu = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(SpaceGame, self).__init__(**kwargs)
-        # with self.canvas:
-        #     Color(0.4, 0.4, 0.4, 1)
-        #     texture = CoreImage("atlas://img/space_invader/darkPurple").texture
-        #     texture.wrap = "repeat"
-        #     nx = float(self.width) / texture.width
-        #     ny = float(self.height) / texture.height
-        #     Rectangle(
-        #         # pos=self.pos,
-        #         size=self.size,
-        #         texture=texture,
-        #         # tex_coords=(0, 0, nx, 0, nx, ny, 0, ny),
-        #     )
         self.leave_time = time()
+        self.bg_event = None
 
     def on_pre_enter(self, *args):
         self.container.init_game(time() - self.leave_time)
+        self.bg_event = Clock.schedule_interval(self.update, FPS)
         super(SpaceGame, self).on_pre_enter(*args)
 
     def on_pre_leave(self, *args):
+        self.bg_event.cancel()
         self.leave_time = time()
         self.menu.but_launch.text = "Play"
         if self.container.player.lives > 0:
             self.menu.but_launch.text = "Resume"
         super(SpaceGame, self).on_pre_leave(*args)
+
+    def update(self, dt):
+        self.background.update(dt)
 
 
 class ShooterGame(ScreenManager):

@@ -109,7 +109,7 @@ class PlayerShip(SpaceShip):
             if self.bullet_fire is not None:
                 self.bullet_fire.cancel()  # Cancel previously set trigger
             self.bullet_rate = (1.0 - self.gun.gun_fire_interval) * math.exp(
-                -r.length() / DPI
+                -5 * r.length() / DPI
             ) + self.gun.gun_fire_interval
             self.bullet_fire = Clock.schedule_interval(
                 lambda dt: self.gun.shoot(), self.bullet_rate
@@ -119,14 +119,11 @@ class PlayerShip(SpaceShip):
     def on_touch_up(self, touch):
         # print("in up ", touch.ud, self.bullet_fire)
         if touch.ud.get("lstick", None) is not None:
-            # self.player_motion.cancel()
-            Clock.unschedule(self.player_motion)
+            self.player_motion.cancel()
             touch.ud["lstick"] = None
         elif touch.ud.get("rstick", None) is not None:
-            # self.bullet_fire.cancel()
-            Clock.unschedule(self.bullet_fire)
+            self.bullet_fire.cancel()
             touch.ud["rstick"] = None
-            # print(self.bullet_fire)
         return True
 
     def on_lives(self, instance, value):
@@ -175,6 +172,12 @@ class PlayerShip(SpaceShip):
             min(max(0, value[0]), self.space_game.width - self.width),
             min(max(0, value[1]), self.space_game.height - self.height),
         )
+
+    def reset(self, lives):
+        self.x = self.parent.width / 2
+        self.y = 30
+        self.lives = lives
+        self.score = 0
 
     def update(self, dt):
         if self.parent is None:
