@@ -3,6 +3,8 @@ from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import Screen
 
+from spaceship import FPS
+
 
 class Menu(Screen):
     but_launch = ObjectProperty(None)
@@ -12,15 +14,13 @@ class Menu(Screen):
     def __init__(self, **kwargs):
         super(Menu, self).__init__(**kwargs)
         self._update_event = None
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_key_down)
 
     def on_pre_enter(self, *args):
-        self._update_event = Clock.schedule_interval(self.update, 1.0 / 30.0)
+        self._update_event = Clock.schedule_interval(self.update, 2. * FPS)
         super(Menu, self).on_pre_enter(*args)
 
     def on_pre_leave(self, *args):
-        self._update_event.cancel()
+        Clock.unschedule(self._update_event)
         super(Menu, self).on_pre_leave(*args)
 
     def update(self, dt):
@@ -38,16 +38,3 @@ class Menu(Screen):
             else:
                 button.font_size = 50
                 button.color = (1, 1, 1, 1)
-
-    def _keyboard_closed(self):
-        self._keyboard.unbind(on_key_down=self._on_key_down)
-        self._keyboard = None
-
-    def _on_key_down(self, keyboard, keycode, text, modifiers, *args):
-        # Keycode is composed of an integer + a string
-        if keycode[1] == "escape" and self.manager.state == "pause":
-            self.manager.current = "main"
-
-        # Return True to accept the key. Otherwise, it will be used by
-        # the system.
-        return True

@@ -1,6 +1,8 @@
 from time import time
 
+from kivy.graphics import Color, Rectangle
 from kivy.core.audio import SoundLoader
+from kivy.core.image import Image as CoreImage
 from kivy.properties import DictProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import FadeTransition, Screen, ScreenManager
@@ -43,6 +45,18 @@ class SpaceGame(Screen):
 
     def __init__(self, **kwargs):
         super(SpaceGame, self).__init__(**kwargs)
+        # with self.canvas:
+        #     Color(0.4, 0.4, 0.4, 1)
+        #     texture = CoreImage("atlas://img/space_invader/darkPurple").texture
+        #     texture.wrap = "repeat"
+        #     nx = float(self.width) / texture.width
+        #     ny = float(self.height) / texture.height
+        #     Rectangle(
+        #         # pos=self.pos,
+        #         size=self.size,
+        #         texture=texture,
+        #         # tex_coords=(0, 0, nx, 0, nx, ny, 0, ny),
+        #     )
         self.leave_time = time()
 
     def on_pre_enter(self, *args):

@@ -2,23 +2,25 @@
 
 <PlayerShip>:
     size_hint: None, None
-    size: 10, 20
-    canvas:
-        Color: 
-            rgb: (0, 1, 0)
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    size: 40, 40
+    source: "atlas://img/space_invader/playerShip1_blue"
+    # canvas:
+    #     Color: 
+    #         rgb: (0, 1, 0)
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
 
 <EnemyShip>:
     size_hint: None, None
-    size: 40, 30
-    canvas:
-        Color: 
-            rgb: (1, 0, 0)
-        Ellipse:
-            pos:self.pos
-            size:self.size
+    size: 40, 40
+    source: "atlas://img/space_invader/enemyRed3"
+    # canvas:
+    #     Color: 
+    #         rgb: (1, 0, 0)
+    #     Ellipse:
+    #         pos:self.pos
+    #         size:self.size
         
 <Debris>:
     size_hint: None, None
@@ -65,11 +67,12 @@
     container: container
 
     canvas:
-        Color: 
-            rgb: (0, 0, 0)
+        # Color: 
+        #     rgb: (0, 0, 0)
         Rectangle:
             pos: self.pos
             size: root.size
+            source: "atlas://img/space_invader/darkPurple"
 
     ActorsContainer:
         id: container

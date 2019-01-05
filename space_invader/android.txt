@@ -1,0 +1,3 @@
+title=Space Invader
+author=F. Collonval
+orientation=portrait

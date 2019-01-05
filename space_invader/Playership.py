@@ -1,20 +1,25 @@
+import math
 from random import choice
 from time import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
+from kivy.metrics import dp
 from kivy.properties import NumericProperty
-from kivy.uix.widget import Widget
+from kivy.uix.image import Image
 from kivy.uix.label import Label
+from kivy.uix.floatlayout import FloatLayout
 from kivy.vector import Vector
 
 from guns import RepeaterGun
 from misc_objects import Debris
-from spaceship import SpaceShip
+from spaceship import SpaceShip, FPS
+
+DPI = dp(96)
 
 
-class PlayerShip(SpaceShip, Widget):
+class PlayerShip(SpaceShip):
     lives = NumericProperty(0)
     score = NumericProperty(0)
 
@@ -27,8 +32,7 @@ class PlayerShip(SpaceShip, Widget):
     _keyboard = None
 
     def __init__(self, space_game, **kwargs):
-        SpaceShip.__init__(self, space_game)
-        Widget.__init__(self, **kwargs)
+        SpaceShip.__init__(self, space_game, **kwargs)
         self.score = 0
         self.gun_fire_interval = 0.1
         if self._keyboard == None:
@@ -40,7 +44,20 @@ class PlayerShip(SpaceShip, Widget):
         self.add_widget(self.gun)
         self.boom = None  # SoundLoader.load('boom.ogg')
 
-        self._update_event = Clock.schedule_interval(self.update, 1.0 / 60.0)
+        # Add touch events layer
+        self.player_speed = Vector(0, 0)
+        self.bullet_rate = 0.0
+        self.player_motion = None
+        self.bullet_fire = None
+        touch_layer = FloatLayout(pos=self.space_game.pos, size=self.space_game.size)
+        touch_layer.bind(
+            on_touch_down=self.on_touch_down,
+            on_touch_move=self.on_touch_move,
+            on_touch_up=self.on_touch_up,
+        )
+        self.add_widget(touch_layer)
+
+        self._update_event = Clock.schedule_interval(self.update, FPS)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_key_down)
@@ -66,11 +83,62 @@ class PlayerShip(SpaceShip, Widget):
         # the system.
         return True
 
+    def on_touch_down(self, touch):
+        vec = Vector(touch.x, touch.y)
+        if touch.x > self.parent.center_x:
+            touch.ud["lstick"] = vec
+        else:
+            touch.ud["rstick"] = vec
+        return True
+
+    def on_touch_move(self, touch):
+        # print("in on_touch_move")
+        vec = Vector(touch.x, touch.y)
+        if touch.ud.get("lstick", None) is not None:
+            r = vec - touch.ud["lstick"]
+            if self.player_motion is not None:
+                self.player_motion.cancel()  # Cancel previously set trigger
+            # Presume screen DPI => 1inch max. should match more than 4
+            # print(r)
+            self.player_speed = r * 6 / DPI
+            self.player_motion = Clock.schedule_interval(
+                lambda dt: self.move(self.player_speed), FPS
+            )
+        elif touch.ud.get("rstick", None) is not None:
+            r = vec - touch.ud["rstick"]
+            if self.bullet_fire is not None:
+                self.bullet_fire.cancel()  # Cancel previously set trigger
+            self.bullet_rate = (1.0 - self.gun.gun_fire_interval) * math.exp(
+                -r.length() / DPI
+            ) + self.gun.gun_fire_interval
+            self.bullet_fire = Clock.schedule_interval(
+                lambda dt: self.gun.shoot(), self.bullet_rate
+            )
+        return True
+
+    def on_touch_up(self, touch):
+        # print("in up ", touch.ud, self.bullet_fire)
+        if touch.ud.get("lstick", None) is not None:
+            # self.player_motion.cancel()
+            Clock.unschedule(self.player_motion)
+            touch.ud["lstick"] = None
+        elif touch.ud.get("rstick", None) is not None:
+            # self.bullet_fire.cancel()
+            Clock.unschedule(self.bullet_fire)
+            touch.ud["rstick"] = None
+            # print(self.bullet_fire)
+        return True
+
     def on_lives(self, instance, value):
         self.alive = self.lives != 0
 
     def on_alive(self, instance, value):
         if not self.alive and self.parent is not None:
+            if self.player_motion is not None:
+                Clock.unschedule(self.player_motion)
+            if self.bullet_fire is not None:
+                Clock.unschedule(self.bullet_fire)
+
             if self.boom:
                 self.boom.play()
             x, y = (self.x, self.y)
@@ -101,6 +169,13 @@ class PlayerShip(SpaceShip, Widget):
             return True
         return False
 
+    def move(self, speed):
+        value = speed + self.pos
+        self.pos = (
+            min(max(0, value[0]), self.space_game.width - self.width),
+            min(max(0, value[1]), self.space_game.height - self.height),
+        )
+
     def update(self, dt):
         if self.parent is None:
             return
@@ -119,8 +194,4 @@ class PlayerShip(SpaceShip, Widget):
         if "spacebar" in self.keyboard_inputs:
             self.gun.shoot()
 
-        value = Vector(velocity_x, velocity_y) + self.pos
-        self.pos = (
-            min(max(0, value[0]), self.space_game.width - self.width),
-            min(max(0, value[1]), self.space_game.height - self.height),
-        )
+        self.move(Vector(velocity_x, velocity_y))

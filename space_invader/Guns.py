@@ -8,16 +8,21 @@ from kivy.uix.widget import Widget
 from bullets import PlayerBullet
 
 
-class RepeaterGun(Widget):    
+class Gun(Widget):
+
+    def __init__(self, **kwargs):
+        super(Gun, self).__init__(**kwargs)
+        self.gun_fire_interval = 0.3
+
+
+class RepeaterGun(Gun):
     space_game = ObjectProperty(None)
-    name = "pgun"
     level = 1
-    gun_cooldown = 0
-    gun_fire_interval = 0.3
     bullet_strength = 70
 
     def __init__(self, **kwargs):
         super(RepeaterGun, self).__init__(**kwargs)
+        self.gun_fire_interval = 0.3
         self.gun_cooldown = time()
         self.laser = None  # SoundLoader.load('laser.ogg')
         # self.laser.stop()
@@ -27,7 +32,7 @@ class RepeaterGun(Widget):
         ret = True
 
         if self.parent.gun_level == 1:
-            gun_fire_interval = 0.3
+            self.gun_fire_interval = 0.3
             bullet_speed = 6 * 60
             bullet_damage = 100
             bullet_angle = uniform(-0.3, 0.3) * 60
@@ -35,26 +40,29 @@ class RepeaterGun(Widget):
             if time() > self.gun_cooldown:
                 if self.laser:
                     self.laser.play()
-                
-                bullet = PlayerBullet(self.space_game.enemies, 
+
+                bullet = PlayerBullet(
+                    self.space_game.enemies,
                     x=self.parent.center_x,
                     y=self.parent.top,
                     velocity_x=bullet_angle,
-                    velocity_y=bullet_speed,)
+                    velocity_y=bullet_speed,
+                )
                 self.space_game.add_widget(bullet)
                 bullet.fire()
-                self.gun_cooldown = time() + gun_fire_interval
+                self.gun_cooldown = time() + self.gun_fire_interval
                 self.parent.score -= 1
 
         elif self.parent.gun_level == 2:
-            gun_fire_interval = 0.15
+            self.gun_fire_interval = 0.15
             bullet_speed = 7 * 60
             bullet_damage = 100
             bullet_angle = uniform(-0.3, 0.3) * 60
             if time() > self.gun_cooldown:
                 if self.laser:
                     self.laser.play()
-                bullet = PlayerBullet(self.space_game.enemies, 
+                bullet = PlayerBullet(
+                    self.space_game.enemies,
                     x=self.parent.center_x,
                     y=self.parent.top,
                     velocity_y=bullet_speed,
@@ -62,14 +70,13 @@ class RepeaterGun(Widget):
                 )
                 self.space_game.add_widget(bullet)
                 bullet.fire()
-                self.gun_cooldown = time() + gun_fire_interval
+                self.gun_cooldown = time() + self.gun_fire_interval
                 self.parent.score -= 1
 
         return ret
 
 
-class SpreadGun(Widget):
-    name = "pgun"
+class SpreadGun(Gun):
     gun_cooldown = 0
 
     def __init__(self, **kwargs):
@@ -81,7 +88,7 @@ class SpreadGun(Widget):
         ret = True
 
         if self.parent.gun_level == 1:
-            gun_fire_interval = 0.4
+            self.gun_fire_interval = 0.4
             bullet_speed = 360
             bullet_damage = 100
             bullet_angle = -300
@@ -89,7 +96,8 @@ class SpreadGun(Widget):
             if time() > self.gun_cooldown:
                 if self.laser:
                     self.laser.play()
-                bullet = PlayerBullet(self.space_game.enemies, 
+                bullet = PlayerBullet(
+                    self.space_game.enemies,
                     x=self.parent.center_x,
                     y=self.parent.top,
                     velocity_y=bullet_speed,
@@ -97,9 +105,10 @@ class SpreadGun(Widget):
                 )
                 self.space_game.add_widget(bullet)
                 bullet.fire()
-                
-                for _ in range(2):                    
-                    bullet = PlayerBullet(self.space_game.enemies,
+
+                for _ in range(2):
+                    bullet = PlayerBullet(
+                        self.space_game.enemies,
                         x=self.parent.center_x,
                         y=self.parent.top,
                         velocity_y=bullet_speed,
@@ -110,11 +119,11 @@ class SpreadGun(Widget):
                     bullet.fire()
                     bullet_angle += 10
 
-                self.gun_cooldown = time() + gun_fire_interval
-                self.space_game.score -= 1
+                self.gun_cooldown = time() + self.gun_fire_interval
+                self.parent.score -= 1
 
         elif self.parent.gun_level == 2:
-            gun_fire_interval = 0.35
+            self.gun_fire_interval = 0.35
             bullet_speed = 360
             bullet_damage = 100
             bullet_angle = -7.5 * 60
@@ -122,8 +131,9 @@ class SpreadGun(Widget):
             if time() > self.gun_cooldown:
                 if self.laser:
                     self.laser.play()
-                
-                bullet = PlayerBullet(self.space_game.enemies,
+
+                bullet = PlayerBullet(
+                    self.space_game.enemies,
                     x=self.parent.center_x,
                     y=self.parent.top,
                     velocity_y=bullet_speed,
@@ -132,7 +142,8 @@ class SpreadGun(Widget):
                 self.space_game.add_widget(bullet)
                 bullet.fire()
                 for _ in range(4):
-                    bullet = PlayerBullet(self.space_game.enemies,
+                    bullet = PlayerBullet(
+                        self.space_game.enemies,
                         x=self.parent.center_x,
                         y=self.parent.top,
                         velocity_y=bullet_speed,
@@ -142,7 +153,7 @@ class SpreadGun(Widget):
                     bullet.fire()
                     bullet_angle += 5
 
-                self.gun_cooldown = time() + gun_fire_interval
-                self.space_game.score -= 1
+                self.gun_cooldown = time() + self.gun_fire_interval
+                self.parent.score -= 1
 
         return ret

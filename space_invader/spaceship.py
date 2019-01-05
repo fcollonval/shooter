@@ -7,6 +7,7 @@ from kivy.properties import (
     ObjectProperty,
     ReferenceListProperty,
 )
+from kivy.uix.image import Image
 from kivy.uix.widget import Widget
 
 FPS = 1./60.
@@ -80,7 +81,7 @@ class Actor(Widget):
             self.parent.remove_widget(self)
 
 
-class SpaceShip(Widget):
+class SpaceShip(Image):
     space_game = ObjectProperty(None)
 
     alive = BooleanProperty(True)
@@ -88,8 +89,9 @@ class SpaceShip(Widget):
     gun_cooldown_time = NumericProperty(0.1)
     gun_fire_interval = NumericProperty(2.4)
 
-    def __init__(self, space_game):
+    def __init__(self, space_game, **kwargs):
         self.space_game = space_game
+        super(SpaceShip, self).__init__(**kwargs)
 
     def collide_ammo(self, ammo):
         raise NotImplementedError()
