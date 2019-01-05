@@ -1,0 +1,50 @@
+#:kivy 1.10.1
+
+
+<MenuButton@Button>:
+    font_size: 36
+    center_x: root.width / 2
+
+
+<Menu>:
+    name: "menu"
+    but_launch: but_launch
+
+    FloatLayout:
+
+        Background:
+            id: background
+
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    texture: self.tx_space
+
+        BoxLayout:
+            orientation: "vertical"
+
+            Label:
+                text: "Carole VS aliens"
+                font_size: 48
+                color: (135/255, 191/255, 1., 1.)
+
+            MenuButton:
+                id: but_launch
+                text: "Play"
+                on_release: root.manager.current = "main"
+
+            # MenuButton:
+            #     id: but_options
+            #     text: "Options"
+            #     # on_release: root.manager.current = "options"
+
+            MenuButton:
+                id: but_credits
+                text: "Credits"
+                on_release: root.manager.current = "credits"
+                
+            MenuButton:
+                id: but_quit
+                text: "Quit"
+                on_release: app.stop()

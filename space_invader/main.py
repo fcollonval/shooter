@@ -13,15 +13,16 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.lang import Builder
 
+Builder.load_file('style.kv')
+
 from engine import ShooterGame, SpaceGame
 from menu import Menu
 from playership import PlayerShip
 from enemies import Debris, EnemyShip
 from bullets import EnemyBullet, PlayerBullet
 
-
-Builder.load_file('style.kv')
-
+Builder.load_file('menu.kv')
+Builder.load_file('credits.kv')
 
 class ShooterApp(App):
     def build(self):

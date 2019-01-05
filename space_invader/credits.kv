@@ -1,0 +1,22 @@
+#:kivy 1.10.1
+
+<Credits@Screen>:
+    name: "credits"
+
+    FloatLayout:
+
+        Background:
+            id: background
+
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    texture: self.tx_space
+
+        Label:
+            font_name: "Roboto"
+            text_size: self.width, None
+            padding: (20, 20)
+            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut aliquam nisl, at condimentum leo. Vestibulum dignissim dignissim laoreet. Cras arcu risus, ullamcorper vitae urna sit amet, blandit hendrerit neque. Praesent felis sem, dictum eget pretium eget, euismod ut ligula. Mauris finibus vel erat id ornare. Fusce in neque nec dolor posuere lacinia a luctus lacus. Cras accumsan mauris ac orci tempor molestie. Integer bibendum, nisl eu cursus vestibulum, ligula ante mattis velit, a commodo ligula est non quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras at enim ligula.\nPhasellus at vestibulum metus. Praesent et ipsum eros. Sed vehicula dignissim lorem, vel sagittis sem aliquam quis. Duis ultricies lacus tristique diam condimentum, a eleifend ex porttitor. Nullam efficitur suscipit dui at viverra. Duis non tincidunt nibh, vel sodales tortor. Suspendisse ipsum lorem, condimentum ut dapibus tristique, interdum non lorem. Nullam eget dictum elit. Suspendisse potenti."
+            on_touch_up: root.manager.current = "menu"
