@@ -95,7 +95,7 @@ class ShooterGame(ScreenManager):
     def __init__(self, **kwargs):
         kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
-        self.bg_music = None  # SoundLoader.load('music.ogg')
+        self.bg_music = SoundLoader.load('sounds/StarCommander1.ogg')
         if self.bg_music:
             self.bg_music.play()
             self.bg_music.loop = True
