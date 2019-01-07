@@ -3,7 +3,6 @@ from random import choice
 from time import time
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import NumericProperty
@@ -15,6 +14,7 @@ from kivy.vector import Vector
 from guns import RepeaterGun
 from misc_objects import Debris
 from spaceship import SpaceShip, FPS
+from utils import load_sound
 
 DPI = dp(96)
 
@@ -42,7 +42,9 @@ class PlayerShip(SpaceShip):
 
         self.gun = RepeaterGun(space_game=self.space_game)
         self.add_widget(self.gun)
-        self.boom = None  # SoundLoader.load('boom.ogg')
+        self.gun.center_x = self.center_x
+        self.gun.center_y = self.center_y
+        self.boom = load_sound('sounds/boom.ogg')
 
         # Add touch events layer
         self.player_speed = Vector(0, 0)
@@ -85,7 +87,7 @@ class PlayerShip(SpaceShip):
 
     def on_touch_down(self, touch):
         vec = Vector(touch.x, touch.y)
-        if touch.x > self.parent.center_x:
+        if touch.x < self.parent.center_x:
             touch.ud["lstick"] = vec
         else:
             touch.ud["rstick"] = vec
@@ -119,10 +121,12 @@ class PlayerShip(SpaceShip):
     def on_touch_up(self, touch):
         # print("in up ", touch.ud, self.bullet_fire)
         if touch.ud.get("lstick", None) is not None:
-            self.player_motion.cancel()
+            if self.player_motion is not None:
+                self.player_motion.cancel()
             touch.ud["lstick"] = None
         elif touch.ud.get("rstick", None) is not None:
-            self.bullet_fire.cancel()
+            if self.bullet_fire is not None:
+                self.bullet_fire.cancel()
             touch.ud["rstick"] = None
         return True
 

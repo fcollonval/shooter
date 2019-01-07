@@ -3,7 +3,7 @@ from random import choice, randint, random, uniform
 from time import time
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
+from utils import load_sound
 
 from bullets import EnemyBullet
 from misc_objects import Debris
@@ -17,7 +17,7 @@ class EnemyShip(SpaceShip, Actor):
         SpaceShip.__init__(self, space_game)
         Actor.__init__(self, **kwargs)
         self.min_y = 200
-        self.boom = None  # SoundLoader.load('boom.ogg')
+        self.boom = load_sound('sounds/boom.ogg')
 
     def move(self):
         super(EnemyShip, self).move()
@@ -40,8 +40,8 @@ class EnemyShip(SpaceShip, Actor):
         if self.alive:
             bullet = EnemyBullet(
                 self.space_game.player,
-                x=self.x + self.width / 2,
-                y=self.y,
+                x=self.center_x,
+                y=self.y - self.height / 2.,
                 velocity_y=-240,
             )
             self.space_game.add_widget(bullet)

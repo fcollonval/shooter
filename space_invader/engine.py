@@ -2,17 +2,18 @@ from time import time
 
 from kivy.graphics import Color, Rectangle
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.core.image import Image as CoreImage
 from kivy.properties import DictProperty, ObjectProperty, ListProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import FadeTransition, Screen, ScreenManager
 from kivy.uix.widget import Widget
+from kivy.vector import Vector
 
 from enemies import EnemyHive
 from playership import PlayerShip
 
 from spaceship import FPS
+from utils import load_sound
 
 
 class ActorsContainer(FloatLayout):
@@ -42,10 +43,11 @@ class ActorsContainer(FloatLayout):
 
 class Background(Widget):
     tx_space = ObjectProperty(None)
+    SPEED = Vector(0., 0.2)
 
     def __init__(self, **kwargs):
         super(Background, self).__init__(**kwargs)
-        t = CoreImage("img/blue.png").texture
+        t = CoreImage("img/bg/blue.png").texture
         t.wrap = "repeat"
         self.tx_space = t
 
@@ -60,7 +62,7 @@ class Background(Widget):
     def update(self, dt):
         # Change the origin of the texture to emulate motion
         t = self.tx_space
-        t.uvpos = (t.uvpos[0], (t.uvpos[1] + 0.2 * dt) % self.height)
+        t.uvpos = ((t.uvpos[0] + self.SPEED.x * dt) % self.width, (t.uvpos[1] + self.SPEED.y * dt) % self.height)
         self.property("tx_space").dispatch(self)  # Force update
 
 
@@ -95,7 +97,7 @@ class ShooterGame(ScreenManager):
     def __init__(self, **kwargs):
         kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
-        self.bg_music = SoundLoader.load('sounds/StarCommander1.ogg')
+        self.bg_music = load_sound('sounds/StarCommander1.ogg')
         if self.bg_music:
             self.bg_music.play()
             self.bg_music.loop = True
