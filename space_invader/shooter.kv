@@ -94,13 +94,13 @@
                 text_size: self.size
                 padding: (5, 2)
 
-        Image:
+        IconButton:
             size_hint: None, None
             size: dp(30), dp(30)
             pos: root.width - self.width - dp(5), root.height - self.height - dp(5)
             source: "atlas://img/space_invader/lineLight31"
             opacity: 0.5
-            # on_touch_up: root.manager.current = "menu"
+            on_release: root.manager.current = "menu"
 
         Image:
             size_hint: None, None
@@ -109,9 +109,10 @@
             source: "atlas://img/space_invader/lineLight07"
             opacity: 0.5
 
-        Image:
+        IconButton:
             size_hint: None, None
             size: dp(50), dp(50)
             pos: root.width - self.width - dp(5), dp(5)
             source: "atlas://img/space_invader/lineLight47"
             opacity: 0.5
+            on_release: container.player.gun.shoot() if container.player.alive else None

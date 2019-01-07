@@ -15,11 +15,12 @@ from kivy.lang import Builder
 
 Builder.load_file('style.kv')
 
+from bullets import EnemyBullet, PlayerBullet
+from enemies import Debris, EnemyShip
 from engine import ShooterGame, SpaceGame
+from game_ui import IconButton
 from menu import Menu
 from playership import PlayerShip
-from enemies import Debris, EnemyShip
-from bullets import EnemyBullet, PlayerBullet
 
 Builder.load_file('menu.kv')
 Builder.load_file('credits.kv')
