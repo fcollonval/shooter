@@ -1,5 +1,6 @@
 import math
 from random import choice
+import sys
 from time import time
 
 from kivy.clock import Clock
@@ -35,7 +36,7 @@ class PlayerShip(SpaceShip):
         SpaceShip.__init__(self, space_game, **kwargs)
         self.score = 0
         self.gun_fire_interval = 0.1
-        if self._keyboard == None:
+        if self._keyboard == None and sys.platform == "win32":
             self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
             self._keyboard.bind(on_key_down=self._on_key_down)
             self._keyboard.bind(on_key_up=self._on_key_up)
