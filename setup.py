@@ -30,7 +30,7 @@ setup(
     package_data={
         'space_invader': [
             '*.py', '*.kv',
-            'img/*.png', 'img/*.atlas',
+            'img/space_invader-*.png', 'img/space_invader.atlas', 'img/bg/*.png',
             'font/*.ttf',
             'sounds/*.ogg'
         ]
