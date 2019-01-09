@@ -5,11 +5,12 @@ from time import time
 
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivy.metrics import dp
+from kivy.metrics import dp, sp
 from kivy.properties import NumericProperty
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
+from kivy.utils import platform
 from kivy.vector import Vector
 
 from guns import RepeaterGun
@@ -36,7 +37,7 @@ class PlayerShip(SpaceShip):
         SpaceShip.__init__(self, space_game, **kwargs)
         self.score = 0
         self.gun_fire_interval = 0.1
-        if self._keyboard == None and sys.platform == "win32":
+        if self._keyboard == None and platform not in ("android", "ios"):
             self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
             self._keyboard.bind(on_key_down=self._on_key_down)
             self._keyboard.bind(on_key_up=self._on_key_up)
@@ -52,7 +53,7 @@ class PlayerShip(SpaceShip):
         self.bullet_rate = 0.0
         self.player_motion = None
         self.bullet_fire = None
-        touch_layer = FloatLayout(pos=self.space_game.pos, size=self.space_game.size)
+        touch_layer = FloatLayout(pos_hint=(0, 0), size_hint=(1., 1.))
         touch_layer.bind(
             on_touch_down=self.on_touch_down,
             on_touch_move=self.on_touch_move,
@@ -143,24 +144,21 @@ class PlayerShip(SpaceShip):
 
             if self.boom:
                 self.boom.play()
-            x, y = (self.x, self.y)
 
             dirs = [-2, -1, 0, 1, 2]
             for _ in range(15):
                 tmp_debris = Debris(
-                    x=x,
-                    y=y,
                     velocity_x=choice(dirs) * 60.0,
                     velocity_y=choice(dirs) * 60.0,
                 )
                 self.parent.add_widget(tmp_debris)
+                tmp_debris.center = self.center
+                tmp_debris.launch()
 
             info = Label(
                 text="Game over!",
-                font_size=50,
+                font_size=sp(50),
                 bold=True,
-                # center_x=self.parent.center_x,
-                # center_y=self.parent.center_y,
             )
             self.parent.add_widget(info)
             self.parent.remove_widget(self)
@@ -172,15 +170,16 @@ class PlayerShip(SpaceShip):
         return False
 
     def move(self, speed):
-        value = speed + self.pos
-        self.pos = (
-            min(max(0, value[0]), self.space_game.width - self.width),
-            min(max(0, value[1]), self.space_game.height - self.height),
+        value = speed + self.center
+        half_w = 0.5 * self.width
+        half_h = 0.5 * self.height
+        self.center = (
+            min(max(half_w, value[0]), self.space_game.width - half_w),
+            min(max(half_h, value[1]), self.space_game.height - half_h),
         )
 
     def reset(self, lives):
-        self.x = self.parent.width / 2
-        self.y = 30
+        self.center = self.parent.center_x, dp(30)
         self.lives = lives
         self.score = 0
 

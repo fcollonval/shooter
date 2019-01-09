@@ -25,8 +25,6 @@ class RepeaterGun(Gun):
         self.gun_fire_interval = 0.3
         self.gun_cooldown = time()
         self.laser = load_sound('sounds/laser2.ogg')
-        # self.laser.stop()
-        # self.laser.loop = False
 
     def shoot(self):
         ret = True
@@ -43,12 +41,12 @@ class RepeaterGun(Gun):
 
                 bullet = PlayerBullet(
                     self.space_game.enemies,
-                    x=self.parent.center_x,
-                    y=self.parent.top,
                     velocity_x=bullet_angle,
                     velocity_y=bullet_speed,
                 )
                 self.space_game.add_widget(bullet)
+                bullet.center_x = self.space_game.player.center_x
+                bullet.y = self.space_game.player.top
                 bullet.fire()
                 self.gun_cooldown = time() + self.gun_fire_interval
                 self.parent.score -= 1
@@ -63,12 +61,12 @@ class RepeaterGun(Gun):
                     self.laser.play()
                 bullet = PlayerBullet(
                     self.space_game.enemies,
-                    x=self.parent.center_x,
-                    y=self.parent.top,
                     velocity_y=bullet_speed,
                     # velocity_x=bullet_angle,
                 )
                 self.space_game.add_widget(bullet)
+                bullet.center_x = self.space_game.player.center_x
+                bullet.y = self.space_game.player.top
                 bullet.fire()
                 self.gun_cooldown = time() + self.gun_fire_interval
                 self.parent.score -= 1
@@ -98,24 +96,24 @@ class SpreadGun(Gun):
                     self.laser.play()
                 bullet = PlayerBullet(
                     self.space_game.enemies,
-                    x=self.parent.center_x,
-                    y=self.parent.top,
                     velocity_y=bullet_speed,
                     velocity_x=0,
                 )
                 self.space_game.add_widget(bullet)
+                bullet.center_x = self.space_game.player.center_x
+                bullet.y = self.space_game.player.top
                 bullet.fire()
 
                 for _ in range(2):
                     bullet = PlayerBullet(
                         self.space_game.enemies,
-                        x=self.parent.center_x,
-                        y=self.parent.top,
                         velocity_y=bullet_speed,
                         velocity_x=bullet_angle,
                         health=bullet_damage,
                     )
                     self.space_game.add_widget(bullet)
+                    bullet.center_x = self.space_game.player.center_x
+                    bullet.y = self.space_game.player.top
                     bullet.fire()
                     bullet_angle += 10
 
@@ -134,22 +132,22 @@ class SpreadGun(Gun):
 
                 bullet = PlayerBullet(
                     self.space_game.enemies,
-                    x=self.parent.center_x,
-                    y=self.parent.top,
                     velocity_y=bullet_speed,
                     velocity_x=0,
                 )
                 self.space_game.add_widget(bullet)
+                bullet.center_x = self.space_game.player.center_x
+                bullet.y = self.space_game.player.top
                 bullet.fire()
                 for _ in range(4):
                     bullet = PlayerBullet(
                         self.space_game.enemies,
-                        x=self.parent.center_x,
-                        y=self.parent.top,
                         velocity_y=bullet_speed,
                         velocity_x=bullet_angle,
                     )
                     self.space_game.add_widget(bullet)
+                    bullet.center_x = self.space_game.player.center_x
+                    bullet.y = self.space_game.player.top
                     bullet.fire()
                     bullet_angle += 5
 

@@ -7,7 +7,7 @@ from kivy.properties import (
     ObjectProperty,
     ReferenceListProperty,
 )
-from kivy.uix.image import Image
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
 FPS = 1./60.
@@ -81,7 +81,7 @@ class Actor(Widget):
             self.parent.remove_widget(self)
 
 
-class SpaceShip(Image):
+class SpaceShip(Widget):
     space_game = ObjectProperty(None)
 
     alive = BooleanProperty(True)

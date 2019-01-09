@@ -3,6 +3,7 @@ from random import choice, randint, random, uniform
 from time import time
 
 from kivy.clock import Clock
+from kivy.metrics import dp
 from utils import load_sound
 
 from bullets import EnemyBullet
@@ -16,8 +17,8 @@ class EnemyShip(SpaceShip, Actor):
     def __init__(self, space_game, **kwargs):
         SpaceShip.__init__(self, space_game)
         Actor.__init__(self, **kwargs)
-        self.min_y = 200
-        self.boom = load_sound('sounds/boom.ogg')
+        self.min_y = dp(200)
+        self.boom = load_sound("sounds/boom.ogg")
 
     def move(self):
         super(EnemyShip, self).move()
@@ -37,14 +38,14 @@ class EnemyShip(SpaceShip, Actor):
             self.alive = False
 
     def shot(self, dt):
-        if self.alive:
+        if self.alive and self.parent is not None:
             bullet = EnemyBullet(
                 self.space_game.player,
-                x=self.center_x,
-                y=self.y - self.height / 2.,
                 velocity_y=-240,
             )
             self.space_game.add_widget(bullet)
+            bullet.center_x = self.center_x
+            bullet.y = self.y
             bullet.fire()
             Clock.schedule_once(
                 self.shot, self.gun_cooldown_time + self.gun_fire_interval * random()
@@ -54,17 +55,16 @@ class EnemyShip(SpaceShip, Actor):
         if not self.alive and self.parent is not None:
             if self.boom:
                 self.boom.play()
-            x, y = (self.center_x, self.center_y)
 
             dirs = [-2, -1, 0, 1, 2]
             for _ in range(10):
                 tmp_debris = Debris(
-                    x=x,
-                    y=y,
                     velocity_x=choice(dirs) * 60.0,
                     velocity_y=choice(dirs) * 60.0,
                 )
                 self.parent.add_widget(tmp_debris)
+                tmp_debris.center = self.center
+                tmp_debris.launch()
 
             self.parent.remove_widget(self)
 
@@ -95,10 +95,13 @@ class EnemyHive(SpaceShipHive):
                 self.hive.pop(i)
 
         if self.space_game.player.alive and len(self.hive) < target_n:
+            half_w = self.width
             enemy = EnemyShip(
                 self.space_game,
-                x=randint(0, self.space_game.width),
-                y=self.space_game.height + 50,
+                center=(
+                    randint(half_w, self.space_game.width - half_w),
+                    self.space_game.height + dp(50),
+                ),
                 velocity_y=uniform(-2, -1) * 60,
                 velocity_x=uniform(-2, 2) * 60,
             )

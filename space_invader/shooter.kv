@@ -2,13 +2,23 @@
 
 <PlayerShip>:
     size_hint: None, None
-    height: dp(50)
-    source: "atlas://img/space_invader/playerShip1_blue"
+    size: dp(66), dp(50)
+
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: "atlas://img/space_invader/playerShip1_blue"
 
 <EnemyShip>:
     size_hint: None, None
-    height: dp(50)
-    source: "atlas://img/space_invader/enemyRed3"
+    size: dp(69), dp(56)
+    
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: "atlas://img/space_invader/enemyRed3"
         
 <Debris>:
     size_hint: None, None
@@ -24,7 +34,7 @@
 
 <Bullet>:
     size_hint: None, None
-    size: dp(4), dp(24)
+    size: dp(4), dp(18)
 
 <PlayerBullet>:
     canvas:
@@ -87,12 +97,12 @@
             Label:
                 text: "Score: {}".format(str(container.player.score))
                 text_size: self.size
-                padding: (5, 2)
+                padding: (dp(5), dp(2))
 
             Label:
                 text: "Lives: {}".format(str(container.player.lives))
                 text_size: self.size
-                padding: (5, 2)
+                padding: (dp(5), dp(2))
 
         IconButton:
             size_hint: None, None

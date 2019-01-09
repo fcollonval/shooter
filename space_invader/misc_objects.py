@@ -18,6 +18,8 @@ class Debris(FloatLayout):
 
     def __init__(self, **kwargs):
         super(Debris, self).__init__(**kwargs)
+
+    def launch(self):
         a = Animation(
             center_x=self.center_x + self.DURATION * FPS * self.velocity_x,
             center_y=self.center_y + self.DURATION * FPS * self.velocity_y,

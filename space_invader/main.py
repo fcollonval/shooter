@@ -3,10 +3,10 @@ from kivy.config import Config
 
 # Config.set should be used before importing any other Kivy modules
 # src: https://kivy.org/doc/stable/api-kivy.config.html
-WIDTH = 800
-HEIGHT = 600
-Config.set("graphics", "width", WIDTH)
-Config.set("graphics", "height", HEIGHT)
+# WIDTH = 800
+# HEIGHT = 600
+# Config.set("graphics", "width", WIDTH)
+# Config.set("graphics", "height", HEIGHT)
 Config.set("kivy", "keyboard_mode", "system")
 
 from kivy.app import App
@@ -27,7 +27,8 @@ Builder.load_file('credits.kv')
 
 class ShooterApp(App):
     def build(self):
-        return ShooterGame(width=WIDTH, height=HEIGHT)
+        # return ShooterGame(width=WIDTH, height=HEIGHT)
+        return ShooterGame()
 
 
 if __name__ == "__main__":
