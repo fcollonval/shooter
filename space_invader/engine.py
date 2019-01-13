@@ -21,7 +21,7 @@ class ActorsContainer(FloatLayout):
     player = ObjectProperty(None, allownone=True)
     enemies = ObjectProperty(None)
 
-    options = DictProperty({"start_lives": 1})
+    options = DictProperty({"start_lives": 3})
 
     def __init__(self, **kwargs):
         super(ActorsContainer, self).__init__(**kwargs)
@@ -44,7 +44,7 @@ class ActorsContainer(FloatLayout):
 
 class Background(Widget):
     tx_space = ObjectProperty(None)
-    SPEED = Vector(0., 0.2)
+    SPEED = Vector(0.0, 0.2)
 
     def __init__(self, **kwargs):
         super(Background, self).__init__(**kwargs)
@@ -63,13 +63,17 @@ class Background(Widget):
     def update(self, dt):
         # Change the origin of the texture to emulate motion
         t = self.tx_space
-        t.uvpos = ((t.uvpos[0] + dp(self.SPEED.x) * dt) % self.width, (t.uvpos[1] + dp(self.SPEED.y) * dt) % self.height)
+        t.uvpos = (
+            (t.uvpos[0] + dp(self.SPEED.x) * dt) % self.width,
+            (t.uvpos[1] + dp(self.SPEED.y) * dt) % self.height,
+        )
         self.property("tx_space").dispatch(self)  # Force update
 
 
 class SpaceGame(Screen):
     background = ObjectProperty(None)
     container = ObjectProperty(None)
+    lives = ObjectProperty(None)
     menu = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -78,6 +82,7 @@ class SpaceGame(Screen):
         self.bg_event = None
 
     def on_pre_enter(self, *args):
+        self.container.player.bind(lives=self.update_lives)
         self.container.init_game(time() - self.leave_time)
         self.bg_event = Clock.schedule_interval(self.update, FPS)
         super(SpaceGame, self).on_pre_enter(*args)
@@ -85,6 +90,7 @@ class SpaceGame(Screen):
     def on_pre_leave(self, *args):
         self.bg_event.cancel()
         self.leave_time = time()
+        self.container.player.unbind(lives=self.update_lives)
         self.menu.but_launch.text = "Play"
         if self.container.player.lives > 0:
             self.menu.but_launch.text = "Resume"
@@ -93,12 +99,26 @@ class SpaceGame(Screen):
     def update(self, dt):
         self.background.update(dt)
 
+    def update_lives(self, instance, value):
+        self.lives.canvas.clear()
+        WIDTH = dp(16)
+        with self.lives.canvas:
+            for i in range(value):
+                Rectangle(
+                    pos=(
+                        self.lives.padding[0] * (i + 1) + i * WIDTH,
+                        self.lives.padding[1] + self.lives.y,
+                    ),
+                    size=(WIDTH, dp(13)),
+                    source="atlas://img/space_invader/playerLife1_blue",
+                )
+
 
 class ShooterGame(ScreenManager):
     def __init__(self, **kwargs):
         kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
-        self.bg_music = load_sound('sounds/StarCommander1.ogg')
+        self.bg_music = load_sound("sounds/StarCommander1.ogg")
         if self.bg_music:
             self.bg_music.play()
             self.bg_music.loop = True

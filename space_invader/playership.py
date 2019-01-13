@@ -157,7 +157,7 @@ class PlayerShip(SpaceShip):
 
             info = Label(
                 text="Game over!",
-                font_size=sp(50),
+                font_size=sp(40),
                 bold=True,
             )
             self.parent.add_widget(info)

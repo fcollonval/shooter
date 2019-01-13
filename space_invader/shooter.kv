@@ -2,7 +2,7 @@
 
 <PlayerShip>:
     size_hint: None, None
-    size: dp(66), dp(50)
+    size: dp(50), dp(38)
 
     canvas:
         Rectangle:
@@ -12,7 +12,7 @@
 
 <EnemyShip>:
     size_hint: None, None
-    size: dp(69), dp(56)
+    size: dp(52), dp(42)
     
     canvas:
         Rectangle:
@@ -74,6 +74,7 @@
 
     container: container
     background: background
+    lives: lives
 
     FloatLayout:
         Background:
@@ -90,19 +91,22 @@
 
         BoxLayout:
             orientation: "vertical"
-            size_hint: None, None
-            size: dp(150), dp(50)
+            size_hint: 1., None
+            height: dp(35)
             pos: dp(5), root.height - self.height - dp(5)
 
             Label:
                 text: "Score: {}".format(str(container.player.score))
                 text_size: self.size
-                padding: (dp(5), dp(2))
+                height: dp(20)
 
-            Label:
-                text: "Lives: {}".format(str(container.player.lives))
-                text_size: self.size
+            BoxLayout:
+                id: lives
+                orientation: "horizontal"
+                size_hint: 1., None
+                height: dp(15)
                 padding: (dp(5), dp(2))
+                pos: self.parent.pos
 
         IconButton:
             size_hint: None, None
@@ -115,7 +119,7 @@
         Image:
             size_hint: None, None
             size: dp(60), dp(60)
-            pos: dp(5), dp(5)
+            pos: dp(10), dp(10)
             source: "atlas://img/space_invader/lineLight07"
             opacity: 0.5
 
