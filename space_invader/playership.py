@@ -13,12 +13,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.utils import platform
 from kivy.vector import Vector
 
+from constants import DPI, FPS, FX_VOLUME
 from guns import RepeaterGun
 from misc_objects import Debris
-from spaceship import SpaceShip, FPS
-from utils import load_sound, FX_VOLUME
-
-DPI = dp(96)
+from spaceship import SpaceShip
+from utils import load_sound
 
 
 class PlayerShip(SpaceShip):
@@ -145,15 +144,7 @@ class PlayerShip(SpaceShip):
             if self.boom:
                 self.boom.play()
 
-            dirs = [-2, -1, 0, 1, 2]
-            for _ in range(15):
-                tmp_debris = Debris(
-                    velocity_x=choice(dirs) * 60.0,
-                    velocity_y=choice(dirs) * 60.0,
-                )
-                self.parent.add_widget(tmp_debris)
-                tmp_debris.center = self.center
-                tmp_debris.launch()
+            self.add_debris()
 
             info = Label(
                 text="Game over!",
@@ -167,6 +158,7 @@ class PlayerShip(SpaceShip):
         if self.collide_widget(ammo) and self.alive:
             if self.boom:
                 self.boom.play()
+            self.add_debris()
             self.lives -= 1
             return True
         return False

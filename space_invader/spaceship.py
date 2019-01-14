@@ -1,4 +1,5 @@
 import math
+from random import choice
 
 from kivy.animation import Animation
 from kivy.properties import (
@@ -10,9 +11,8 @@ from kivy.properties import (
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
-FPS = 1./60.
-EPS = 1e-8  # Avoid dividing by zero
-MARGIN = 100  # Number of pixels outside the screen for element displacement
+from constants import EPS, MARGIN, FPS
+from misc_objects import Debris
 
 
 class Actor(Widget):
@@ -92,6 +92,17 @@ class SpaceShip(Widget):
     def __init__(self, space_game, **kwargs):
         self.space_game = space_game
         super(SpaceShip, self).__init__(**kwargs)
+
+    def add_debris(self):
+        dirs = [-2, -1, 0, 1, 2]
+        for _ in range(10):
+            tmp_debris = Debris(
+                velocity_x=choice(dirs) * 60.0,
+                velocity_y=choice(dirs) * 60.0,
+            )
+            self.parent.add_widget(tmp_debris)
+            tmp_debris.center = self.center
+            tmp_debris.launch()
 
     def collide_ammo(self, ammo):
         raise NotImplementedError()

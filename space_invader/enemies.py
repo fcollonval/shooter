@@ -1,14 +1,14 @@
 import math
-from random import choice, randint, random, uniform
+from random import randint, random, uniform
 from time import time
 
 from kivy.clock import Clock
 from kivy.metrics import dp
-from utils import load_sound, FX_VOLUME
 
+from constants import FPS, FX_VOLUME
+from utils import load_sound
 from bullets import EnemyBullet
-from misc_objects import Debris
-from spaceship import Actor, SpaceShip, SpaceShipHive, FPS
+from spaceship import Actor, SpaceShip, SpaceShipHive
 
 PERIOD = 10.0  # Time elapse after which more enemies will be on the screen
 
@@ -55,16 +55,7 @@ class EnemyShip(SpaceShip, Actor):
         if not self.alive and self.parent is not None:
             if self.boom:
                 self.boom.play()
-
-            dirs = [-2, -1, 0, 1, 2]
-            for _ in range(10):
-                tmp_debris = Debris(
-                    velocity_x=choice(dirs) * 60.0,
-                    velocity_y=choice(dirs) * 60.0,
-                )
-                self.parent.add_widget(tmp_debris)
-                tmp_debris.center = self.center
-                tmp_debris.launch()
+            self.add_debris()
 
             self.parent.remove_widget(self)
 

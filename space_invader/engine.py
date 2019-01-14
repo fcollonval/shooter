@@ -1,20 +1,19 @@
 from time import time
 
-from kivy.graphics import Color, Rectangle
 from kivy.clock import Clock
 from kivy.core.image import Image as CoreImage
-from kivy.metrics import dp, Metrics
-from kivy.properties import DictProperty, ObjectProperty, ListProperty
+from kivy.graphics import Color, Rectangle
+from kivy.metrics import Metrics, dp
+from kivy.properties import DictProperty, ListProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import FadeTransition, Screen, ScreenManager
 from kivy.uix.widget import Widget
 from kivy.vector import Vector
 
+from constants import FPS, MUSIC_VOLUME
 from enemies import EnemyHive
 from playership import PlayerShip
-
-from spaceship import FPS
-from utils import load_sound, MUSIC_VOLUME
+from utils import load_sound
 
 
 class ActorsContainer(FloatLayout):

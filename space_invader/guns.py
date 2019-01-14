@@ -5,7 +5,8 @@ from kivy.properties import ObjectProperty
 from kivy.uix.widget import Widget
 
 from bullets import PlayerBullet
-from utils import load_sound, FX_VOLUME
+from constants import FX_VOLUME
+from utils import load_sound
 
 
 class Gun(Widget):
