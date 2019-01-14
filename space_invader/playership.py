@@ -16,7 +16,7 @@ from kivy.vector import Vector
 from guns import RepeaterGun
 from misc_objects import Debris
 from spaceship import SpaceShip, FPS
-from utils import load_sound
+from utils import load_sound, FX_VOLUME
 
 DPI = dp(96)
 
@@ -46,7 +46,7 @@ class PlayerShip(SpaceShip):
         self.add_widget(self.gun)
         self.gun.center_x = self.center_x
         self.gun.center_y = self.center_y
-        self.boom = load_sound('sounds/boom.ogg')
+        self.boom = load_sound('sounds/boom.ogg', volume=FX_VOLUME)
 
         # Add touch events layer
         self.player_speed = Vector(0, 0)
@@ -165,6 +165,8 @@ class PlayerShip(SpaceShip):
 
     def collide_ammo(self, ammo):
         if self.collide_widget(ammo) and self.alive:
+            if self.boom:
+                self.boom.play()
             self.lives -= 1
             return True
         return False

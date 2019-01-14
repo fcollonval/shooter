@@ -4,7 +4,7 @@ from time import time
 
 from kivy.clock import Clock
 from kivy.metrics import dp
-from utils import load_sound
+from utils import load_sound, FX_VOLUME
 
 from bullets import EnemyBullet
 from misc_objects import Debris
@@ -18,7 +18,7 @@ class EnemyShip(SpaceShip, Actor):
         SpaceShip.__init__(self, space_game)
         Actor.__init__(self, **kwargs)
         self.min_y = dp(200)
-        self.boom = load_sound("sounds/boom.ogg")
+        self.boom = load_sound("sounds/boom.ogg", volume=FX_VOLUME)
 
     def move(self):
         super(EnemyShip, self).move()

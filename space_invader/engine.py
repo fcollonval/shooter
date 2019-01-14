@@ -14,13 +14,12 @@ from enemies import EnemyHive
 from playership import PlayerShip
 
 from spaceship import FPS
-from utils import load_sound
+from utils import load_sound, MUSIC_VOLUME
 
 
 class ActorsContainer(FloatLayout):
     player = ObjectProperty(None, allownone=True)
     enemies = ObjectProperty(None)
-
     options = DictProperty({"start_lives": 3})
 
     def __init__(self, **kwargs):
@@ -118,7 +117,7 @@ class ShooterGame(ScreenManager):
     def __init__(self, **kwargs):
         kwargs["transition"] = FadeTransition()
         super(ShooterGame, self).__init__(**kwargs)
-        self.bg_music = load_sound("sounds/StarCommander1.ogg")
+        self.bg_music = load_sound("sounds/StarCommander1.ogg", volume=MUSIC_VOLUME)
         if self.bg_music:
             self.bg_music.play()
             self.bg_music.loop = True

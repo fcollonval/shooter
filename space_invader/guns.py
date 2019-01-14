@@ -5,7 +5,7 @@ from kivy.properties import ObjectProperty
 from kivy.uix.widget import Widget
 
 from bullets import PlayerBullet
-from utils import load_sound
+from utils import load_sound, FX_VOLUME
 
 
 class Gun(Widget):
@@ -24,7 +24,7 @@ class RepeaterGun(Gun):
         super(RepeaterGun, self).__init__(**kwargs)
         self.gun_fire_interval = 0.3
         self.gun_cooldown = time()
-        self.laser = load_sound('sounds/laser2.ogg')
+        self.laser = load_sound('sounds/laser2.ogg', volume=FX_VOLUME)
 
     def shoot(self):
         ret = True
@@ -80,7 +80,7 @@ class SpreadGun(Gun):
     def __init__(self, **kwargs):
         super(SpreadGun, self).__init__(**kwargs)
         self.gun_cooldown = time()
-        self.laser = load_sound('sounds/laser2.ogg')
+        self.laser = load_sound('sounds/laser2.ogg', volume=FX_VOLUME)
 
     def shoot(self):
         ret = True
