@@ -5,10 +5,10 @@ from time import time
 from kivy.clock import Clock
 from kivy.metrics import dp
 
-from constants import FPS, FX_VOLUME
-from utils import load_sound
 from bullets import EnemyBullet
+from constants import FPS, FX_VOLUME
 from spaceship import Actor, SpaceShip, SpaceShipHive
+from utils import load_sound
 
 PERIOD = 10.0  # Time elapse after which more enemies will be on the screen
 
@@ -23,19 +23,21 @@ class EnemyShip(SpaceShip, Actor):
     def move(self):
         super(EnemyShip, self).move()
         Clock.schedule_once(
-            self.shot, self.gun_cooldown_time + self.gun_fire_interval * random()
+            self.shot, self.gun_cooldown_time + 2. * self.gun_fire_interval * random()
         )
 
     def on_stop(self, animation, widget):
         self.animation.cancel_all(self)
-        if self.center_y == self.min_y:
-            self.velocity_y *= -1.0
-            if self.parent is None:
-                self.alive = False
-            else:
-                super(EnemyShip, self).move()
-        else:
+
+        if self.parent is None:
             self.alive = False
+        else:
+            width, height = self.parent.size
+            if self.top > height or self.y < self.min_y:
+                self.velocity_y *= -1.0
+            if self.right > width or self.x < 0.:
+                self.velocity_x *= -1.0
+            super(EnemyShip, self).move()
 
     def shot(self, dt):
         if self.alive and self.parent is not None:

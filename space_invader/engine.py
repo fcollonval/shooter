@@ -1,5 +1,6 @@
 from time import time
 
+from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Rectangle
