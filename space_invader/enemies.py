@@ -2,6 +2,7 @@ import math
 from random import randint, random, uniform
 from time import time
 
+from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.metrics import dp
 
@@ -55,6 +56,7 @@ class EnemyShip(SpaceShip, Actor):
 
     def on_alive(self, instance, value):
         if not self.alive and self.parent is not None:
+            Animation.cancel_all(self)
             if self.boom:
                 self.boom.play()
             self.add_debris()

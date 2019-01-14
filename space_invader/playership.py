@@ -181,6 +181,13 @@ class PlayerShip(SpaceShip):
         if self.parent is None:
             return
 
+        # Test if player collide with an enemy
+        for enemy in self.space_game.enemies.hive:
+            if enemy.alive and self.collide_widget(enemy):
+                self.lives -= 1
+                self.score -= 50
+                enemy.alive = False
+
         velocity_x = 0
         velocity_y = 0
         if "a" in self.keyboard_inputs:
