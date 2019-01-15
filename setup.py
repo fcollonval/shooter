@@ -8,7 +8,9 @@ options = {
           "android-api": "27",
           "ndk-api": "21",
           "dist-name": "space_invader",
-          "ndk-version": "r16b"
+          "ndk-version": "r16b",
+          "orientation": "sensor",
+          "permission": "VIBRATE"
     }
 }
 
