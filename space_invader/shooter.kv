@@ -1,5 +1,19 @@
 #:kivy 1.10.1
 
+<SpaceShip>:
+
+    canvas:
+        PushMatrix
+        Rotate:
+            angle: self.orientation
+            origin: self.center
+        Rectangle:
+            pos: (self.center_x - dp(self.propulsion_texture.width * 0.2), self.y - dp(self.propulsion_texture.height * 0.5))
+            size: dp(0.66 * self.propulsion_texture.width), dp(0.5 * self.propulsion_texture.height)
+            texture: self.propulsion_texture
+        PopMatrix
+
+
 <PlayerShip>:
     size_hint: None, None
     size: dp(50), dp(38)
@@ -13,7 +27,7 @@
 <EnemyShip>:
     size_hint: None, None
     size: dp(52), dp(42)
-    
+
     canvas:
         Rectangle:
             pos: self.pos

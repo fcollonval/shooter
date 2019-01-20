@@ -6,7 +6,7 @@ from time import time
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.metrics import dp, sp
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
@@ -33,6 +33,7 @@ class PlayerShip(SpaceShip):
     _keyboard = None
 
     def __init__(self, space_game, **kwargs):
+        kwargs['orientation'] = 0
         SpaceShip.__init__(self, space_game, **kwargs)
         self.score = 0
         self.gun_fire_interval = 0.1
@@ -68,7 +69,7 @@ class PlayerShip(SpaceShip):
         self._keyboard = None
 
     def _on_key_down(self, keyboard, keycode, text, modifiers, *args):
-        commands = ["a", "s", "d", "w", "spacebar", "escape"]
+        commands = ["a", "s", "d", "w", "spacebar"]
         if keycode[1] in commands and keycode[1] not in self.keyboard_inputs:
             self.keyboard_inputs.append(keycode[1])
             # Return True to accept the key. Otherwise, it will be used by
@@ -76,7 +77,7 @@ class PlayerShip(SpaceShip):
         return True
 
     def _on_key_up(self, keyboard, keycode, *args):
-        commands = ["a", "s", "d", "w", "spacebar", "escape"]
+        commands = ["a", "s", "d", "w", "spacebar"]
         if keycode[1] in commands:
             try:
                 self.keyboard_inputs.remove(keycode[1])
@@ -87,6 +88,9 @@ class PlayerShip(SpaceShip):
         return True
 
     def on_touch_down(self, touch):
+        if not self.alive:
+            return False
+        
         vec = Vector(touch.x, touch.y)
         if touch.x < self.parent.center_x:
             touch.ud["lstick"] = vec
@@ -135,16 +139,12 @@ class PlayerShip(SpaceShip):
         self.alive = self.lives != 0
 
     def on_alive(self, instance, value):
+        super(PlayerShip, self).on_alive(instance, value)
         if not self.alive and self.parent is not None:
             if self.player_motion is not None:
-                Clock.unschedule(self.player_motion)
+                self.player_motion.cancel()
             if self.bullet_fire is not None:
-                Clock.unschedule(self.bullet_fire)
-
-            if self.boom:
-                self.boom.play()
-
-            self.add_debris()
+                self.bullet_fire.cancel()
 
             info = Label(
                 text="Game over!",
@@ -152,7 +152,6 @@ class PlayerShip(SpaceShip):
                 bold=True,
             )
             self.parent.add_widget(info)
-            self.parent.remove_widget(self)
 
     def collide_ammo(self, ammo):
         if self.collide_widget(ammo) and self.alive:

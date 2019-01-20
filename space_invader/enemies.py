@@ -54,15 +54,6 @@ class EnemyShip(SpaceShip, Actor):
                 self.shot, self.gun_cooldown_time + self.gun_fire_interval * random()
             )
 
-    def on_alive(self, instance, value):
-        if not self.alive and self.parent is not None:
-            Animation.cancel_all(self)
-            if self.boom:
-                self.boom.play()
-            self.add_debris()
-
-            self.parent.remove_widget(self)
-
     def collide_ammo(self, ammo):
         if self.collide_widget(ammo) and self.alive:
             self.space_game.player.score += 10

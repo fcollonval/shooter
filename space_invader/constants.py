@@ -2,6 +2,7 @@ from kivy.metrics import dp
 
 DPI = dp(96)
 FPS = 1./60.
+PROPULSION_FREQUENCY = 10
 
 MUSIC_VOLUME = 1.
 FX_VOLUME = 0.7

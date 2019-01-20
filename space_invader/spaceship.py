@@ -1,7 +1,10 @@
+from itertools import cycle
 import math
 from random import choice
 
 from kivy.animation import Animation
+from kivy.clock import Clock
+from kivy.core.image import Image as CoreImage
 from kivy.properties import (
     BooleanProperty,
     NumericProperty,
@@ -11,7 +14,7 @@ from kivy.properties import (
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 
-from constants import EPS, MARGIN, FPS
+from constants import EPS, MARGIN, FPS, PROPULSION_FREQUENCY
 from misc_objects import Debris
 
 
@@ -82,8 +85,15 @@ class Actor(Widget):
 
 
 class SpaceShip(Widget):
+    orientation = NumericProperty(180)
     space_game = ObjectProperty(None)
-
+    propulsion_texture = ObjectProperty(CoreImage("atlas://img/space_invader/spaceEffects_005").texture)
+    REACTOR_SPRITE = [
+            CoreImage("atlas://img/space_invader/spaceEffects_005").texture,
+            CoreImage("atlas://img/space_invader/spaceEffects_006").texture,
+            CoreImage("atlas://img/space_invader/spaceEffects_007").texture,
+            CoreImage("atlas://img/space_invader/spaceEffects_006").texture,
+        ]
     alive = BooleanProperty(True)
 
     gun_cooldown_time = NumericProperty(0.1)
@@ -91,7 +101,23 @@ class SpaceShip(Widget):
 
     def __init__(self, space_game, **kwargs):
         self.space_game = space_game
+        self.propulsion = cycle(SpaceShip.REACTOR_SPRITE)
+        self.propulsion_counter = 0
         super(SpaceShip, self).__init__(**kwargs)
+        self.event = Clock.schedule_interval(self.animate_propulsion, FPS)
+    
+    def on_alive(self, instance, value):
+        if not self.alive:
+            if self.event is not None:
+                self.event.cancel()
+
+            if self.parent is not None:
+                Animation.cancel_all(self)
+                if self.boom:
+                    self.boom.play()
+                self.add_debris()
+
+                self.parent.remove_widget(self)
 
     def add_debris(self):
         dirs = [-2, -1, 0, 1, 2]
@@ -106,6 +132,12 @@ class SpaceShip(Widget):
 
     def collide_ammo(self, ammo):
         raise NotImplementedError()
+
+    def animate_propulsion(self, dt):
+
+        self.propulsion_counter += 1
+        if self.propulsion_counter % PROPULSION_FREQUENCY == 0:
+            self.propulsion_texture = next(self.propulsion)
 
 
 class SpaceShipHive(SpaceShip):
