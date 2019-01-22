@@ -139,7 +139,6 @@ class PlayerShip(SpaceShip):
         self.alive = self.lives != 0
 
     def on_alive(self, instance, value):
-        super(PlayerShip, self).on_alive(instance, value)
         if not self.alive and self.parent is not None:
             if self.player_motion is not None:
                 self.player_motion.cancel()
@@ -152,6 +151,7 @@ class PlayerShip(SpaceShip):
                 bold=True,
             )
             self.parent.add_widget(info)
+        super(PlayerShip, self).on_alive(instance, value)
 
     def collide_ammo(self, ammo):
         if self.collide_widget(ammo) and self.alive:
