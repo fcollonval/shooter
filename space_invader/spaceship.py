@@ -102,9 +102,8 @@ class SpaceShip(Widget):
     def __init__(self, space_game, **kwargs):
         self.space_game = space_game
         self.propulsion = cycle(SpaceShip.REACTOR_SPRITE)
-        self.propulsion_counter = 0
         super(SpaceShip, self).__init__(**kwargs)
-        self.event = Clock.schedule_interval(self.animate_propulsion, FPS)
+        self.event = Clock.schedule_interval(self.animate_propulsion, PROPULSION_FREQUENCY)
     
     def on_alive(self, instance, value):
         if not self.alive:
@@ -134,10 +133,7 @@ class SpaceShip(Widget):
         raise NotImplementedError()
 
     def animate_propulsion(self, dt):
-
-        self.propulsion_counter += 1
-        if self.propulsion_counter % PROPULSION_FREQUENCY == 0:
-            self.propulsion_texture = next(self.propulsion)
+        self.propulsion_texture = next(self.propulsion)
 
 
 class SpaceShipHive(SpaceShip):
