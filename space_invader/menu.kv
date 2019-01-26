@@ -30,8 +30,13 @@
                 color: (135/255., 191/255., 1., 1.)
 
             MenuButton:
+                id: but_story
+                text: "Play Story"
+                on_release: root.manager.current = "map"
+
+            MenuButton:
                 id: but_launch
-                text: "Play"
+                text: "Survival mode"
                 on_release: root.manager.current = "main"
 
             # MenuButton:

@@ -20,11 +20,13 @@ from enemies import EnemyShip
 from engine import ShooterGame, SpaceGame
 from game_ui import IconButton
 from menu import Menu
+from map import Map
 from misc_objects import Debris
 from playership import PlayerShip
 
 Builder.load_file('menu.kv')
 Builder.load_file('credits.kv')
+Builder.load_file('map.kv')
 
 class ShooterApp(App):
     def build(self):

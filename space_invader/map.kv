@@ -1,0 +1,12 @@
+#:kivy 1.10.1
+
+<Map>:
+    name: "map"
+
+    canvas:
+        Rectangle:
+            pos: self.width - dp(self.tx_map.width / self.tx_map.height) * self.height, 0
+            size: dp(self.tx_map.width / self.tx_map.height) * self.height, self.height
+            texture: self.tx_map
+            # tex_coords: self.tex_coords
+    
