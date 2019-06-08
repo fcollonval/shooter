@@ -1,10 +1,8 @@
 #:kivy 1.10.1
-
+#:import C kivy.utils.get_color_from_hex
 
 <MenuButton@Button>:
     font_size: sp(36)
-    center_x: root.width / 2
-
 
 <Menu>:
     name: "menu"
@@ -15,19 +13,21 @@
         Background:
             id: background
 
-            canvas:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-                    texture: self.tx_space
-
         BoxLayout:
             orientation: "vertical"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: 0.9, 0.9
+
+            canvas:
+                BorderImage:
+                    pos: self.pos
+                    size: self.size
+                    source: 'img/metalPanel.png'
 
             Label:
                 text: "Carole VS aliens"
                 font_size: sp(48)
-                color: (135/255., 191/255., 1., 1.)
+                color: C('#E86A17')
 
             MenuButton:
                 id: but_launch

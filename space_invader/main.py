@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from kivy.config import Config
 
 # Config.set should be used before importing any other Kivy modules
@@ -11,6 +10,7 @@ Config.set("kivy", "keyboard_mode", "system")
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.text import LabelBase
 from kivy.lang import Builder
 
 Builder.load_file('style.kv')
@@ -33,4 +33,9 @@ class ShooterApp(App):
 
 
 if __name__ == "__main__":
+    LabelBase.register(
+        name='Future',
+        fn_regular='font/kenvector_future_thin.ttf',
+        fn_bold='font/kenvector_future.ttf'
+    )
     ShooterApp().run()

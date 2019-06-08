@@ -8,15 +8,18 @@
         Background:
             id: background
 
-            canvas:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-                    texture: self.tx_space
-
-        Label:
-            font_name: "Roboto"
-            text_size: self.width, None
-            padding: (dp(20), dp(20))
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut aliquam nisl, at condimentum leo. Vestibulum dignissim dignissim laoreet. Cras arcu risus, ullamcorper vitae urna sit amet, blandit hendrerit neque. Praesent felis sem, dictum eget pretium eget, euismod ut ligula. Mauris finibus vel erat id ornare. Fusce in neque nec dolor posuere lacinia a luctus lacus. Cras accumsan mauris ac orci tempor molestie. Integer bibendum, nisl eu cursus vestibulum, ligula ante mattis velit, a commodo ligula est non quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Cras at enim ligula.\nPhasellus at vestibulum metus. Praesent et ipsum eros. Sed vehicula dignissim lorem, vel sagittis sem aliquam quis. Duis ultricies lacus tristique diam condimentum, a eleifend ex porttitor. Nullam efficitur suscipit dui at viverra. Duis non tincidunt nibh, vel sodales tortor. Suspendisse ipsum lorem, condimentum ut dapibus tristique, interdum non lorem. Nullam eget dictum elit. Suspendisse potenti."
+        SubMenu:
             on_touch_up: root.manager.current = "menu"
+
+            MenuHeader:
+                text: "Credits"
+
+            Label:
+                font_name: "Roboto"
+                markup: True
+                padding: (dp(20), dp(20))
+                text: "The starting point was the code of [ref=https://github.com/b7500af1/shooter][color=333333]Frank Bieberly[/color][/ref]. Thanks to him for sharing his code.\n\nGraphics and sounds effects comes from [ref=https://kenney.nl/assets/][color=333333]Kenney[/color][/ref] under CC0 1.0 license. In particular the following sets are used:\n* [ref=https://kenney.nl/assets/space-shooter-redux/][color=333333]Space Shooter Redux[/color][/ref]\n* [ref=https://kenney.nl/assets/onscreen-controls][color=333333]On Screen Controls[/color][/ref]\n* [ref=https://kenney.nl/assets/digital-audio][color=333333]Digital Audio[/color][/ref]\n\nTheme music is [ref=https://www.dl-sounds.com/royalty-free/star-commander1/][color=333333]Star Commander 1[/color][/ref] by [b]DL Sounds[/b].\n\nAnd I must not forget the book [ref=https://www.packtpub.com/application-development/kivy-blueprints][color=333333]Kivy Blueprints[/color][/ref] by Mark Vasilkov that teach me about Kivy."
+                text_size: self.width, None                
+                on_ref_press:
+                    import webbrowser
+                    webbrowser.open(args[1])
